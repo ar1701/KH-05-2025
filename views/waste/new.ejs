@@ -1,0 +1,30 @@
+<%- include("../partials/navbar") %>
+
+<div class="container mt-5">
+  <h2 class="text-center">Add Waste Post</h2>
+  <form action="/waste" method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
+    <div class="mb-3">
+      <label class="form-label">Waste Name</label>
+      <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Quantity (kg)</label>
+      <input type="number" name="quantity" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">City</label>
+      <input type="text" name="city" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sector No</label>
+      <input type="text" name="sector" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Upload Image</label>
+      <input type="file" name="image" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Post Waste</button>
+  </form>
+</div>
+
+<%- include("../partials/footer") %>

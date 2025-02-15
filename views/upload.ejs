@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+
+<form action="/waste" method="POST" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Waste Name" required>
+    <input type="number" name="quantity" placeholder="Quantity (kg)" required>
+    <input type="text" name="city" placeholder="City" required>
+    <input type="text" name="sector" placeholder="Sector No." required>
+    <input type="file" name="image" required>
+    <button type="submit">Upload</button>
+  </form>
+  
+  <%- include('partials/footer') %>

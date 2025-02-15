@@ -11,6 +11,7 @@ const ejsMate = require("ejs-mate");
 const multer = require("multer");
 const session = require("express-session");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -26,6 +27,10 @@ const dbUrl = process.env.ATLASDB_URL;
 const genAI = new GoogleGenerativeAI("apiKey");
 app.locals.AppName = "WMS";
 const fileManager = new GoogleAIFileManager(apiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const { generateResponse } = require('./test');
+const { storage1, cloudinary } = require("./cloudConfig");
+const Waste = require("./model/waste");
 
 // Configure storage for uploaded files
 const storage = multer.diskStorage({
@@ -62,6 +67,8 @@ const sessionOptions = {
 };
 
 // Middleware setup
+app.use(cors());
+app.use(bodyParser.json());
 app.use(session(sessionOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -107,19 +114,19 @@ function asyncHandler(fn) {
 }
 
 
-async function uploadToGemini(filePath, mimeType) {
-  const uploadResult = await fileManager.uploadFile(filePath, { mimeType, displayName: path.basename(filePath) });
-  return uploadResult.file;
-}
+// async function uploadToGemini(filePath, mimeType) {
+//   const uploadResult = await fileManager.uploadFile(filePath, { mimeType, displayName: path.basename(filePath) });
+//   return uploadResult.file;
+// }
 
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
-};
+// const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// const generationConfig = {
+//   temperature: 1,
+//   topP: 0.95,
+//   topK: 40,
+//   maxOutputTokens: 8192,
+//   responseMimeType: "text/plain",
+// };
 
 
 // Utility for file to generative part
@@ -277,18 +284,128 @@ app.get("/chatbot", isLoggedIn,(req, res) => {
   res.render("chatbot");
 });
 
+app.post('/chatbot', async (req, res) => {
+  try {
+      const prompt = req.body.message;
+      const response = await generateResponse(prompt);
+      // console.log(response);
+      res.json({ message: response });
+  } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
 
-app.post(
-  "/chatbot",
-  isLoggedIn,
-  asyncHandler(async (req, res) => {
-    const userInput = req.body.message;
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(userInput);
-    const response = await result.response;
-    res.json({ message: response.text() });
-  })
-);
+
+app.post("/waste", isLoggedIn, upload.single("image"), async (req, res) => {
+  try {
+    const { name, quantity, city, sector } = req.body;
+    const newWaste = new Waste({
+      name,
+      quantity,
+      city,
+      sector,
+      imageUrl: req.file.path, // Cloudinary URL
+      user: req.user._id, // Assign user ID
+    });
+    await newWaste.save();
+    res.redirect("/waste/myposts");
+  } catch (error) {
+    res.status(500).json({ error: "Error uploading waste post" });
+  }
+});
+
+
+app.get("/ws", async (req, res) => {
+  try {
+    res.render("waste/index");
+  } catch (error) {
+    console.error(error);
+    res.render("/index");
+  }
+});
+
+app.get("/waste", async (req, res) => {
+  try {
+    const wastes = await Waste.find().populate("user", "name email");
+    res.json(wastes);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching waste data" });
+  }
+});
+
+app.get("/waste/all", async (req, res) => {
+  try {
+    const wastes = await Waste.find({});
+    res.render("waste/allPosts", { wastes, user: req.user });
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching waste posts" });
+  }
+});
+
+
+// READ - View a user's waste posts
+app.get("/waste/myposts", isLoggedIn, async (req, res) => {
+  try {
+    const myWastes = await Waste.find({ user: req.user._id });
+    res.render("waste/allPosts", { wastes: myWastes, user: req.user });
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user waste posts" });
+  }
+});
+
+app.get("/waste/new", isLoggedIn, (req, res) => {
+  res.render("waste/new");
+});
+
+
+
+// UPDATE - Edit a waste post
+app.put("/waste/:id", isLoggedIn, upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, quantity, city, sector } = req.body;
+    const waste = await Waste.findOne({ _id: id, user: req.user._id });
+
+    if (!waste) return res.status(403).json({ error: "Unauthorized update" });
+
+    if (req.file) {
+      // Delete old image from Cloudinary
+      const oldImageId = waste.imageUrl.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(oldImageId);
+      waste.imageUrl = req.file.path; // Update new image
+    }
+
+    waste.name = name;
+    waste.quantity = quantity;
+    waste.city = city;
+    waste.sector = sector;
+    await waste.save();
+
+    res.json({ message: "Waste post updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating waste post" });
+  }
+});
+
+
+// DELETE - Remove a waste post
+app.delete("/waste/:id", isLoggedIn, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const waste = await Waste.findOneAndDelete({ _id: id, user: req.user._id });
+
+    if (!waste) return res.status(403).json({ error: "Unauthorized delete" });
+
+    // Delete image from Cloudinary
+    const imagePublicId = waste.imageUrl.split("/").pop().split(".")[0];
+    await cloudinary.uploader.destroy(imagePublicId);
+
+    res.json({ message: "Waste post deleted" });
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting waste post" });
+  }
+});
+
 
 
 app.get("*", (req, res) => {  
@@ -303,6 +420,7 @@ function formatToBulletPoints(text) {
   
   return formattedText.trim();
 }
+
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
