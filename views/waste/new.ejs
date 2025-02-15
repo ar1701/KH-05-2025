@@ -1,9 +1,32 @@
 <%- include("../partials/header") %>
 <%- include("../partials/navbar") %>
 
+<style>
+  form {
+      color: black;
+  }
+  .spinner {
+      display: none;
+      width: 3rem;
+      height: 3rem;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #28a745;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
+  @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+  }
+</style>
+
 <div class="container mt-5">
   <h2 class="text-center">Add Waste Post</h2>
-  <form action="/waste" method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
+  <form action="/waste" method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light" id="wasteForm">
     <div class="mb-3">
       <label class="form-label">Waste Name</label>
       <input type="text" name="name" class="form-control" required>
@@ -24,8 +47,29 @@
       <label class="form-label">Upload Image</label>
       <input type="file" name="image" class="form-control" required>
     </div>
-    <button type="submit" class="btn btn-success">Post Waste</button>
+    <button type="submit" class="btn btn-success" id="submitBtn">Post Waste</button>
+    <div class="spinner" id="loadingSpinner"></div>
   </form>
 </div>
+
+<script>
+  document.getElementById("wasteForm").addEventListener("submit", function(event) {
+      const submitBtn = document.getElementById("submitBtn");
+      const spinner = document.getElementById("loadingSpinner");
+
+      // Show spinner and disable submit button
+      spinner.style.display = "block";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Uploading...";
+
+      // Simulate file upload delay (for demo purposes)
+      setTimeout(() => {
+          spinner.style.display = "none";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Post Waste";
+          alert("Post successfully uploaded!");
+      }, 3000); // Replace with actual server response handling
+  });
+</script>
 
 <%- include("../partials/footer") %>

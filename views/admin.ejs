@@ -1,0 +1,164 @@
+<%- include("partials/header") %>
+<style>
+   .navbar{
+    color: black;
+   }
+</style>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5191HlHnmsE0pWkDdpzu1ETn3i3K-XkimXA&s" alt="Logo" class="logo">
+                <span>Eco Waste Admin</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/users"><i class="fas fa-users me-1"></i> Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/waste-data"><i class="fas fa-chart-bar me-1"></i> Waste Data</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/reports"><i class="fas fa-file-alt me-1"></i> Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/settings"><i class="fas fa-cog me-1"></i> Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar bg-light p-3">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2"><a href="/admin/users" class="nav-link"><i class="fas fa-users me-2"></i> Manage Users</a></li>
+                        <li class="nav-item mb-2"><a href="/admin/waste-data" class="nav-link"><i class="fas fa-trash me-2"></i> Waste Data</a></li>
+                        <li class="nav-item mb-2"><a href="/admin/reports" class="nav-link"><i class="fas fa-file-alt me-2"></i> Generate Reports</a></li>
+                        <li class="nav-item mb-2"><a href="/admin/settings" class="nav-link"><i class="fas fa-cog me-2"></i> System Settings</a></li>
+                        <li class="nav-item mb-2"><a href="/admin/notifications" class="nav-link"><i class="fas fa-bell me-2"></i> Notifications</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <h2 class="mb-4">Admin Dashboard</h2>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-users me-2"></i> Total Users</h5>
+                                <p class="card-text display-4">1,234</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-trash me-2"></i> Waste Collected</h5>
+                                <p class="card-text display-4">5,678 KG</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-chart-line me-2"></i> Active Challenges</h5>
+                                <p class="card-text display-4">12</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title"><i class="fas fa-history me-2"></i> Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Activity</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>John Doe</td>
+                                    <td>Recycled 5 KG of waste</td>
+                                    <td>2023-10-01</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jane Smith</td>
+                                    <td>Joined the 7-Day Plastic-Free Challenge</td>
+                                    <td>2023-10-02</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Alice Johnson</td>
+                                    <td>Planted a tree</td>
+                                    <td>2023-10-03</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Waste Data Chart -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title"><i class="fas fa-chart-bar me-2"></i> Waste Data Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="wasteChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("partials/footer") %>  
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for Waste Data Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Waste Data Chart
+        const ctx = document.getElementById('wasteChart').getContext('2d');
+        const wasteChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Waste Collected (KG)',
+                    data: [1200, 1500, 1800, 2000, 1700, 2200],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

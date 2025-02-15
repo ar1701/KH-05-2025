@@ -18,10 +18,16 @@
                 <h3>♻️ Only 9% of all plastic waste ever produced has been recycled.</h3>
             </div>
             <div class="carousel-item">
-                <h3>🚮 The world dumps **2.12 million tons** of waste daily.</h3>
+                <h3>🚮 The world dumps <b>2.12 million</b> tons** of waste daily.</h3>
             </div>
             <div class="carousel-item">
                 <h3>🔥 Landfills contribute **11% of methane gas emissions globally**.</h3>
+            </div>
+            <div class="carousel-item">
+                <h3>🔄 Germany has the highest recycling rate (~67%), while many countries lag behind.</h3>
+            </div>
+            <div class="carousel-item">
+                <h3>🌊 By 2050, plastic in oceans could outweigh fish if trends continue.</h3>
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#wasteFactsCarousel" data-bs-slide="prev">
@@ -86,7 +92,7 @@
         function animateValue(id, start, end, duration) {
             let obj = document.getElementById(id);
             let range = end - start;
-            let increment = range / (duration / 150);
+            let increment = range / (duration / 60);
             let current = start;
             let step = function() {
                 current += increment;

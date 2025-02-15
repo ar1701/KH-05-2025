@@ -452,6 +452,10 @@ app.get("/carbon", async (req, res) => {
   res.render("carbon");
 });
 
+app.get("/admin", async (req, res) => {
+  res.render("admin");
+});
+
 app.get("*", (req, res) => {  
   res.redirect("/index");
 });
