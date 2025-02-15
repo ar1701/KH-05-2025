@@ -1,1 +1,1 @@
-# Kochi-Hack
+# Waste Management System

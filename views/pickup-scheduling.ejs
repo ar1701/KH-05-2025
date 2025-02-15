@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Schedule Waste Pickup</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Schedule New Pickup</h5>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Waste Type</label>
+                            <select class="form-select">
+                                <option>Recyclable</option>
+                                <option>Biodegradable</option>
+                                <option>Hazardous</option>
+                                <option>Electronic</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pickup Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pickup Time</label>
+                            <select class="form-select">
+                                <option>Morning (8 AM - 12 PM)</option>
+                                <option>Afternoon (12 PM - 4 PM)</option>
+                                <option>Evening (4 PM - 8 PM)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Schedule Pickup</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Pickups</h5>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Recyclable Waste</h6>
+                                <small>Tomorrow</small>
+                            </div>
+                            <p class="mb-1">Morning (8 AM - 12 PM)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
