@@ -1,0 +1,27 @@
+<%- include("../partials/header") %>
+<%- include("../partials/navbar") %>
+
+<div class="container mt-5">
+  <h2>My Waste Listings</h2>
+  
+  <div class="row">
+    <% wastes.forEach(waste => { %>
+      <div class="col-md-3 col-sm-6">
+        <div class="card mb-4 shadow" style="max-width: 100%; font-size: 0.9rem;">
+          <img src="<%= waste.imageUrl %>" class="card-img-top" alt="Waste Image" style="height: 180px; object-fit: cover;">
+          <div class="card-body p-2">
+            <h6 class="card-title"><%= waste.name %></h6>
+            <p class="card-text mb-1">Quantity: <%= waste.quantity %> kg</p>
+            <p class="card-text mb-2">Location: <%= waste.city %>, Sector <%= waste.sector %></p>
+            <a href="/waste/<%= waste._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
+            <form action="/waste/<%= waste._id %>?_method=DELETE" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>
