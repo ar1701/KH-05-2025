@@ -3,12 +3,12 @@
 <div class="container mt-5">
     <h2 class="mb-4">AI Waste Classification</h2>
     
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Upload Waste Image</h5>
-                    <form>
+                    <form method="post" action="/waste-classification" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="wasteImage" class="form-label">Select an image of the waste</label>
                             <input type="file" class="form-control" id="wasteImage" accept="image/*">
@@ -17,8 +17,33 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> -->
         
+        <div class="container">
+            <div class="content-wrapper">
+                <h1>Waste Classification</h1>
+                
+                <div class="upload-section">
+                    <div class="upload-container">
+                        <div class="image-preview-container">
+                            <img id="imagePreview" class="image-preview">
+                        </div>
+                        <input type="file" id="imageInput" accept="image/*">
+                        <label for="imageInput" class="upload-btn"><i class="fas fa-upload"></i> Choose Image</label>
+                        <button id="uploadBtn" class="upload-btn"><i class="fas fa-check"></i> Upload</button>
+                        <div id="loading" class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <div id="result"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
@@ -31,5 +56,55 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            const previewContainer = document.querySelector('.image-preview-container');
+            const preview = document.getElementById('imagePreview');
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'flex';
+            }
+
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+        const imageInput = document.getElementById('imageInput');
+        const file = imageInput.files[0];
+
+        if (!file) {
+            alert('Please select an image file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const loading = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            loading.style.display = 'flex';
+
+            const response = await fetch('/waste-classification', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            resultDiv.innerText = data.result;
+            resultDiv.style.display = 'block';
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            loading.style.display = 'none';
+        }
+    });
+</script>
 
 <%- include('partials/footer') %>

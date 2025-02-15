@@ -1,40 +1,159 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Waste Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
 
-<div class="container mt-5">
-    <div class="jumbotron text-center">
-        <h1 class="display-4">Welcome to Eco Waste Management</h1>
-        <p class="lead">AI-powered waste management for a sustainable future</p>
+    <!-- Navbar -->
+   <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/index">
+            <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5191HlHnmsE0pWkDdpzu1ETn3i3K-XkimXA&s" alt="Logo">
+            <span>Eco Waste</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <% if (user) { %>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/waste-classification"><i class="fas fa-camera me-1"></i> Classify</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chatbot"><i class="fas fa-comments me-1"></i> Chatbot</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/eco-score"><i class="fas fa-star me-1"></i> Eco Score</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pickup-scheduling"><i class="fas fa-truck me-1"></i> Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/marketplace"><i class="fas fa-store me-1"></i> Market</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/waste-data"><i class="fas fa-chart-bar me-1"></i> Data</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/disposal-guide"><i class="fas fa-book me-1"></i> Guide</a></li>
+                </ul>
+                <span class="text-light me-3">&nbsp;&nbsp;&nbsp; Hi, <%= user.name %></span>
+                <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+            <% } else { %>
+                <a href="/login" class="btn btn-light">Login</a>
+                <a href="/signup" class="btn btn-warning ms-2">Sign Up</a>
+            <% } %>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container text-center">
+            <h1>Eco Waste Management</h1>
+            <p class="lead">AI-powered waste management for a cleaner planet</p>
+        </div>
     </div>
 
-    <div class="row mt-5">
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">AI Waste Classification</h5>
-                    <p class="card-text">Upload images of waste for AI-powered classification and disposal recommendations.</p>
-                    <a href="/waste-classification" class="btn btn-success">Classify Waste</a>
-                </div>
+    <!-- Waste Management Facts Carousel -->
+    <div id="wasteFactsCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+        <div class="carousel-inner text-center">
+            <div class="carousel-item active">
+                <h3>🌎 Every year, 2.1 billion tons of waste is produced worldwide.</h3>
+            </div>
+            <div class="carousel-item">
+                <h3>♻️ Only 9% of all plastic waste ever produced has been recycled.</h3>
+            </div>
+            <div class="carousel-item">
+                <h3>🚮 The world dumps **2.12 million tons** of waste daily.</h3>
+            </div>
+            <div class="carousel-item">
+                <h3>🔥 Landfills contribute **11% of methane gas emissions globally**.</h3>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Recycling Chatbot</h5>
-                    <p class="card-text">Get instant answers to your recycling questions from our AI-powered chatbot.</p>
-                    <a href="/chatbot" class="btn btn-success">Chat Now</a>
-                </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#wasteFactsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#wasteFactsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- Real-Time Impact Counters -->
+    <div class="container text-center mt-5">
+        <h2>🌱 Our Impact So Far</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <h3 id="wasteRecycled">0</h3>
+                <p>KG Waste Recycled</p>
             </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Eco Score</h5>
-                    <p class="card-text">Track your environmental impact and earn rewards for sustainable actions.</p>
-                    <a href="/eco-score" class="btn btn-success">View Score</a>
-                </div>
+            <div class="col-md-4">
+                <h3 id="plasticSaved">0</h3>
+                <p>Plastic Bottles Saved</p>
+            </div>
+            <div class="col-md-4">
+                <h3 id="co2Reduced">0</h3>
+                <p>KG CO₂ Emissions Reduced</p>
             </div>
         </div>
     </div>
-</div>
 
-<%- include('partials/footer') %>
+    <!-- Gamified Eco Challenges -->
+    <div class="container mt-5">
+        <h2 class="text-center">🎮 Eco Challenges - Join & Earn Rewards!</h2>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <img src="https://images.squarespace-cdn.com/content/v1/584c6ba93e00be3a72c07e26/9be51854-4f76-4648-bf51-6f2d41996969/Blue+Green+Illustrated+Say+No+To+Plastic+Bag+Instagram+Post.jpg" alt="Challenge" class="challenge-img">
+                <h5>🌿 7-Day Plastic-Free Challenge</h5>
+                <p>Avoid plastic for 7 days & earn eco-points!</p>
+            </div>
+            <div class="col-md-4">
+                <img src="https://www.green.earth/hubfs/planting%20trees.png" alt="Challenge" class="challenge-img">
+                <h5>🌳 Plant & Share</h5>
+                <p>Plant a tree & share a photo to get rewards.</p>
+            </div>
+            <div class="col-md-4">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCNL7FIjSXSO-8LzYm2NXlGxN2lAEQw-nJ7w&s" alt="Challenge" class="challenge-img">
+                <h5>🚯 Zero Waste Week</h5>
+                <p>Track your waste & reduce it to win prizes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark footer text-center">
+        <p>&copy; 2025 Eco Waste Management | Making the planet greener</p>
+        <p>
+            <a href="#" class="text-light me-3">Privacy Policy</a>
+            <a href="#" class="text-light">Terms of Service</a>
+        </p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Live Counter Script -->
+    <script>
+        function animateValue(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            let range = end - start;
+            let increment = range / (duration / 50);
+            let current = start;
+            let step = function() {
+                current += increment;
+                obj.innerText = Math.floor(current);
+                if (current < end) {
+                    requestAnimationFrame(step);
+                } else {
+                    obj.innerText = end;
+                }
+            };
+            step();
+        }
+
+        animateValue("wasteRecycled", 0, 52438, 2000);
+        animateValue("plasticSaved", 0, 29872, 2000);
+        animateValue("co2Reduced", 0, 10294, 2000);
+    </script>
+
+</body>
+</html>

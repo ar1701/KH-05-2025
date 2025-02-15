@@ -1,3 +1,4 @@
+const { name } = require("ejs");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const passportLocalMongoose = require("passport-local-mongoose");
@@ -6,8 +7,8 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const userSchema = new Schema({
   email: {
     type: String,
-    unique: true,
   },
+  name: String,
   phone: Number,
 });
 userSchema.plugin(passportLocalMongoose);
