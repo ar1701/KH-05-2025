@@ -1,26 +1,164 @@
 <%- include('partials/header') %>
+<style>
+    .message {
+  border-radius: 8px;
+  margin: 8px 0;
+}
 
+.message.user {
+  margin-left: 20%;
+}
+
+.message.bot {
+  margin-right: 20%;
+}
+
+.chat-container {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+}
+</style>
 <div class="container mt-5">
-    <h2 class="mb-4">Recycling Awareness Chatbot</h2>
-    
-    <div class="card">
-        <div class="card-body">
-            <div class="chat-container" style="height: 400px; overflow-y: auto;">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot">
-                        <p>Hello! I'm your recycling assistant. How can I help you today?</p>
-                    </div>
-                </div>
-            </div>
-            
-            <form class="mt-3">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Ask about recycling...">
-                    <button class="btn btn-success" type="submit">Send</button>
-                </div>
-            </form>
+  <h2 class="mb-4">Recycling Awareness Chatbot</h2>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="chat-container" style="height: 400px; overflow-y: auto">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message bot">
+            <p>
+              Hello! I'm your recycling assistant. How can I help you today?
+            </p>
+          </div>
         </div>
+      </div>
+
+      <form method="post" action="/chatbot" class="mt-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            name="message"
+            placeholder="Ask about recycling..."
+          />
+          <button class="btn btn-success" type="submit">Send</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
+<script>
+ function formatToBulletPoints(text) {
+  // First, let's break the text into segments
+  const segments = text.split('**');
+  
+  // Start building the HTML list
+  let html = '<ul style="list-style-type: none; padding-left: 0;">';
+  
+  // Process each segment
+  for (let i = 1; i < segments.length; i++) {
+    const segment = segments[i].trim();
+    if (segment) {
+      // Remove asterisks and clean up the text
+      const cleanedText = segment
+        .replace(/\*/g, '')
+        .replace(/:-/g, ':')
+        .replace(/^-\s*/, '')
+        .trim();
+
+      if (cleanedText.includes(':')) {
+        const [title, content] = cleanedText.split(':').map(s => s.trim());
+        html += `
+          <li style="margin-bottom: 10px;">
+            <strong>${title}:</strong>
+            <div style="margin-left: 20px;">${content}</div>
+          </li>`;
+      }
+    }
+  }
+  
+  html += '</ul>';
+  return html;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const chatForm = document.querySelector("form");
+    const chatMessages = document.getElementById("chatMessages");
+    const inputField = document.querySelector("input[name='message']");
+
+    // Prevent default form submission
+    chatForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      sendMessage();
+    });
+
+    // Send message on Enter key
+    inputField.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const userInput = inputField.value.trim();
+      if (userInput === "") return;
+
+      addMessage(userInput, "user");
+
+      try {
+        const response = await fetch("/chatbot", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userInput }),
+        });
+
+        const data = await response.json();
+        const formattedResponse = formatToBulletPoints(data.message);
+        addMessage(formattedResponse, "bot");
+      } catch (error) {
+        console.error("Error:", error);
+        addMessage("Sorry, something went wrong. Please try again.", "bot");
+      }
+
+      inputField.value = "";
+    }
+
+   
+  });
+
+  function addMessage(text, sender) {
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message", sender);
+  
+  // Apply styles based on sender
+  const style = sender === 'user' 
+    ? 'background-color: #f8f9fa; margin-left: 20%;' 
+    : 'background-color: #e3f2fd; margin-right: 20%;';
+    
+  messageDiv.style.cssText = `
+    ${style}
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  `;
+
+  // Only format bot messages
+  if (sender === 'bot') {
+    messageDiv.innerHTML = formatToBulletPoints(text);
+  } else {
+    messageDiv.textContent = text;
+  }
+  
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+</script>
 
 <%- include('partials/footer') %>

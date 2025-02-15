@@ -20,11 +20,12 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
 const { isLoggedIn } = require("./middleware.js");
 const PORT = process.env.PORT;
-
+const apiKey = process.env.API_KEY;
 const app = express();
 const dbUrl = process.env.ATLASDB_URL;
-const genAI = new GoogleGenerativeAI("AIzaSyAB7blS2dxS4vZk83B0f-CbhRpwfOgyiWM");
+const genAI = new GoogleGenerativeAI("apiKey");
 app.locals.AppName = "WMS";
+const fileManager = new GoogleAIFileManager(apiKey);
 
 // Configure storage for uploaded files
 const storage = multer.diskStorage({
@@ -97,6 +98,29 @@ async function connectDB() {
 }
 
 connectDB();
+
+// Error handling utility
+function asyncHandler(fn) {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+
+async function uploadToGemini(filePath, mimeType) {
+  const uploadResult = await fileManager.uploadFile(filePath, { mimeType, displayName: path.basename(filePath) });
+  return uploadResult.file;
+}
+
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
+
 
 // Utility for file to generative part
 function fileToGenerativePart(path, mimeType) {
@@ -185,36 +209,19 @@ app.use((err, req, res, next) => {
 });
 
 
-// app.post("/waste-classification", upload.single("file"), (req, res) => {
-//   if (!req.file) {
-//     return res.status(400).json({ error: "No file uploaded" });
-//   }
-
-//   const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${
-//     req.file.filename
-//   }`;
-//   console.log("Uploaded file URL:", fileUrl); // Log downloadable link
-
-//   // Send response to the frontend
-//   res.json({ message: "File uploaded successfully", fileUrl });
-// });
-
-// Form submission route
-// ...existing code...
 
 // Form submission route
 app.post('/waste-classification', upload.single('image'), async (req, res) => {
-  console.log('Endpoint /waste-classification hit');
   try {
     if (!req.file) {
       console.log('No file uploaded');
       return res.status(400).json({ message: "No file uploaded" });
     }
     
-    console.log('File received:', req.file);
+    // console.log('File received:', req.file);
     
     // Initialize the file manager with your API key
-    const fileManager = new GoogleAIFileManager("AIzaSyBA7aUkaByxGSDjmBcbOoc4lzmOD59qLN8");
+    const fileManager = new GoogleAIFileManager(process.env.API_KEY);
     
     // Upload the file using its path and metadata
     const uploadResult = await fileManager.uploadFile(req.file.path, {
@@ -222,9 +229,9 @@ app.post('/waste-classification', upload.single('image'), async (req, res) => {
       displayName: req.file.originalname,
     });
     
-    console.log(
-      `Uploaded file ${uploadResult.file.displayName} as: ${uploadResult.file.uri}`
-    );
+    // console.log(
+    //   `Uploaded file ${uploadResult.file.displayName} as: ${uploadResult.file.uri}`
+    // );
     
     // Initialize the generative AI client with your API key
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -233,7 +240,12 @@ app.post('/waste-classification', upload.single('image'), async (req, res) => {
     
     // Generate content using the uploaded file's URI
     const result = await model.generateContent([
-      "Tell me about this image.",
+      `Provide the classification of the uploaded image in a properly formatted bullet point list. Use the following structure:
+
+Biodegradable/Non-biodegradable/Hazardous: [Your Answer]
+Type of Waste: [Your Answer]
+Appropriate Bin: [Your Answer]
+Proper Method for Decomposition: [Your Answer]`,
       {
         fileData: {
           fileUri: uploadResult.file.uri,
@@ -244,11 +256,14 @@ app.post('/waste-classification', upload.single('image'), async (req, res) => {
     
     // Extract and log the text response
     const responseText = result.response.text();
-    console.log(responseText);
+    // console.log(responseText);
     
+    const formattedOutput = formatToBulletPoints(responseText);
+
+
     return res.json({ 
       message: "File processed successfully", 
-      result: responseText 
+      result: formattedOutput 
     });
     
   } catch (error) {
@@ -258,12 +273,36 @@ app.post('/waste-classification', upload.single('image'), async (req, res) => {
 });
 
 
+app.get("/chatbot", isLoggedIn,(req, res) => {
+  res.render("chatbot");
+});
 
+
+app.post(
+  "/chatbot",
+  isLoggedIn,
+  asyncHandler(async (req, res) => {
+    const userInput = req.body.message;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(userInput);
+    const response = await result.response;
+    res.json({ message: response.text() });
+  })
+);
 
 
 app.get("*", (req, res) => {  
   res.redirect("/index");
 });
+
+function formatToBulletPoints(text) {
+  // Ensure bullet points are formatted properly
+  let formattedText = text
+      .replace(/\* \*\*(.*?)\*\*:/g, '\n- **$1:**') // Fix headers
+      .replace(/\* /g, '\n- '); // Ensure new bullet points
+  
+  return formattedText.trim();
+}
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
