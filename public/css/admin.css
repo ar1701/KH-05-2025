@@ -1,0 +1,67 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Navbar Styling */
+.navbar {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand img {
+    margin-right: 10px;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    border-right: 1px solid #ddd;
+    height: 100vh;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .nav-link {
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Table Styling */
+.table {
+    margin-top: 20px;
+}
+
+.table thead {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Footer Styling */
+footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    background-color: #333;
+    color: white;
+}
