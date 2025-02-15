@@ -1,0 +1,48 @@
+<%- include("../partials/header") %>
+<%- include("../partials/navbar") %>
+
+<style>
+    form{
+        margin-bottom: 100px;
+    }
+</style>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Edit Waste Details</h2>
+  
+  <form action="/waste/<%= waste._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Waste Name</label>
+      <input type="text" name="name" class="form-control" value="<%= waste.name %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Quantity (kg)</label>
+      <input type="number" name="quantity" class="form-control" value="<%= waste.quantity %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">City</label>
+      <input type="text" name="city" class="form-control" value="<%= waste.city %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Sector No.</label>
+      <input type="text" name="sector" class="form-control" value="<%= waste.sector %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Current Image</label><br>
+      <img src="<%= waste.imageUrl %>" alt="Waste Image" style="width: 200px; height: auto;">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Upload New Image (Optional)</label>
+      <input type="file" name="image" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-5">Update</button>
+  </form>
+</div>
+
+<%- include("../partials/footer") %>

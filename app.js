@@ -32,6 +32,8 @@ const { generateResponse } = require('./test');
 const { storage1, cloudinary } = require("./cloudConfig");
 const Waste = require("./model/waste");
 
+const upload1 = multer({ storage: storage1 });
+
 // Configure storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -279,6 +281,17 @@ Proper Method for Decomposition: [Your Answer]`,
   }
 });
 
+app.get("/waste/:id/edit", isLoggedIn, async (req, res) => {
+  try {
+    const waste = await Waste.findById(req.params.id);
+    if (!waste || waste.user.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized access");
+    }
+    res.render("waste/edit", { waste });
+  } catch (error) {
+    res.status(500).send("Error fetching waste data");
+  }
+});
 
 app.get("/chatbot", isLoggedIn,(req, res) => {
   res.render("chatbot");
@@ -296,26 +309,36 @@ app.post('/chatbot', async (req, res) => {
 });
 
 
-app.post("/waste", isLoggedIn, upload.single("image"), async (req, res) => {
+app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
   try {
     const { name, quantity, city, sector } = req.body;
-    const newWaste = new Waste({
+    
+    if (!req.file) {
+      return res.status(400).send("Image is required");
+    }
+
+    const imageUrl = req.file.path; // Cloudinary automatically provides a URL
+
+    const waste = new Waste({
       name,
       quantity,
       city,
       sector,
-      imageUrl: req.file.path, // Cloudinary URL
-      user: req.user._id, // Assign user ID
+      imageUrl, // Store Cloudinary URL
+      user: req.user._id,
     });
-    await newWaste.save();
-    res.redirect("/waste/myposts");
+
+    await waste.save();
+    res.redirect("/waste/all"); // Redirect to show all waste posts
   } catch (error) {
-    res.status(500).json({ error: "Error uploading waste post" });
+    console.error("Error posting waste:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 
-app.get("/ws", async (req, res) => {
+
+app.get("/marketplace", async (req, res) => {
   try {
     res.render("waste/index");
   } catch (error) {
@@ -342,12 +365,23 @@ app.get("/waste/all", async (req, res) => {
   }
 });
 
+app.get("/waste/:id/edit", isLoggedIn, async (req, res) => {
+  try {
+    const waste = await Waste.findById(req.params.id);
+    if (!waste || waste.user.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized access");
+    }
+    res.render("waste/edit", { waste });
+  } catch (error) {
+    res.status(500).send("Error fetching waste data");
+  }
+});
 
 // READ - View a user's waste posts
 app.get("/waste/myposts", isLoggedIn, async (req, res) => {
   try {
     const myWastes = await Waste.find({ user: req.user._id });
-    res.render("waste/allPosts", { wastes: myWastes, user: req.user });
+    res.render("waste/myPosts", { wastes: myWastes, user: req.user });
   } catch (error) {
     res.status(500).json({ error: "Error fetching user waste posts" });
   }
@@ -359,54 +393,64 @@ app.get("/waste/new", isLoggedIn, (req, res) => {
 
 
 
-// UPDATE - Edit a waste post
-app.put("/waste/:id", isLoggedIn, upload.single("image"), async (req, res) => {
+app.put("/waste/:id", isLoggedIn, upload1.single("image"), async (req, res) => {
   try {
-    const { id } = req.params;
     const { name, quantity, city, sector } = req.body;
-    const waste = await Waste.findOne({ _id: id, user: req.user._id });
+    const waste = await Waste.findById(req.params.id);
 
-    if (!waste) return res.status(403).json({ error: "Unauthorized update" });
-
-    if (req.file) {
-      // Delete old image from Cloudinary
-      const oldImageId = waste.imageUrl.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(oldImageId);
-      waste.imageUrl = req.file.path; // Update new image
+    if (!waste || waste.user.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized update");
     }
 
     waste.name = name;
     waste.quantity = quantity;
     waste.city = city;
     waste.sector = sector;
-    await waste.save();
 
-    res.json({ message: "Waste post updated successfully" });
+    if (req.file) {
+      // Delete old image from Cloudinary
+      const oldImageId = waste.imageUrl.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(oldImageId);
+
+      // Update with new image URL
+      waste.imageUrl = req.file.path;
+    }
+
+    await waste.save();
+    res.redirect("/waste/all");
   } catch (error) {
-    res.status(500).json({ error: "Error updating waste post" });
+    res.status(500).send("Error updating waste details");
   }
 });
 
 
+
+
 // DELETE - Remove a waste post
 app.delete("/waste/:id", isLoggedIn, async (req, res) => {
+  // console.log("User attempting delete:", req.user);
+
   try {
     const { id } = req.params;
     const waste = await Waste.findOneAndDelete({ _id: id, user: req.user._id });
 
     if (!waste) return res.status(403).json({ error: "Unauthorized delete" });
 
-    // Delete image from Cloudinary
-    const imagePublicId = waste.imageUrl.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(imagePublicId);
-
-    res.json({ message: "Waste post deleted" });
+    if (waste.imageUrl) {
+      const imagePublicId = waste.imageUrl.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(imagePublicId);
+    }
+    res.redirect("/waste/all");
   } catch (error) {
-    res.status(500).json({ error: "Error deleting waste post" });
+    console.error(error);
+    res.status(400).json({ error: "Post Deleted" });
+    res.redirect("/waste/all");
   }
 });
 
-
+app.get("/carbon", async (req, res) => {
+  res.render("carbon");
+});
 
 app.get("*", (req, res) => {  
   res.redirect("/index");
