@@ -11,7 +11,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: rgb(13, 25, 59);
+    color: rgb(51, 12, 65);
 }
 
 /* Carousel */
@@ -59,7 +59,4 @@ h3 {
     background-color: #2e7d32;
     color: white;
     padding: 15px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
 }
