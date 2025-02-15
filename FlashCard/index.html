@@ -1,0 +1,498 @@
+
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Interactive Waste Flashcards</title>
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+                <style>
+                    :root {
+                        --plastic-color: #FF6B6B;
+                        --paper-color: #4ECDC4;
+                        --food-color: #45B7D1;
+                        --electronic-color: #96CEB4;
+                        --glass-color: #FFEEAD;
+                    }
+            
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+            
+                    body {
+                        min-height: 100vh;
+                        background: linear-gradient(135deg, #c2e59c, #64b3f4);
+                        overflow-x: hidden;
+                    }
+            
+                    .page {
+                        position: absolute;
+                        width: 100%;
+                        min-height: 100vh;
+                        transition: transform 0.6s ease-in-out;
+                        padding: 2rem;
+                    }
+            
+                    .input-page {
+                        transform: translateX(0);
+                        background: linear-gradient(135deg, #c2e59c, #64b3f4);
+                    }
+            
+                    .cards-page {
+                        transform: translateX(100%);
+                        background: linear-gradient(135deg, #96c93d, #00b09b);
+                    }
+            
+                    .show-cards .input-page {
+                        transform: translateX(-100%);
+                    }
+            
+                    .show-cards .cards-page {
+                        transform: translateX(0);
+                    }
+            
+                    .container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+            
+                    .header {
+                        text-align: center;
+                        margin-bottom: 3rem;
+                        color: white;
+                        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                    }
+            
+                    .header h1 {
+                        font-size: 3rem;
+                        margin-bottom: 1rem;
+                        animation: floating 3s ease-in-out infinite;
+                    }
+            
+                    @keyframes floating {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-10px); }
+                    }
+            
+                    .input-container {
+                        background: rgba(255, 255, 255, 0.9);
+                        padding: 2rem;
+                        border-radius: 20px;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                        max-width: 600px;
+                        margin: 0 auto;
+                        transform: translateY(20px);
+                        animation: slideUp 0.6s ease forwards;
+                    }
+            
+                    @keyframes slideUp {
+                        to { transform: translateY(0); }
+                    }
+            
+                    .input-group {
+                        margin-bottom: 1.5rem;
+                    }
+            
+                    label {
+                        display: block;
+                        margin-bottom: 0.5rem;
+                        font-weight: 600;
+                        color: #2c3e50;
+                    }
+            
+                    select, input {
+                        width: 100%;
+                        padding: 1rem;
+                        border: 2px solid #ddd;
+                        border-radius: 10px;
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                        background: white;
+                    }
+            
+                    select:focus, input:focus {
+                        border-color: #64b3f4;
+                        box-shadow: 0 0 0 3px rgba(100,179,244,0.2);
+                        outline: none;
+                    }
+            
+                    .submit-btn {
+                        background: linear-gradient(45deg, #64b3f4, #96c93d);
+                        color: white;
+                        border: none;
+                        padding: 1rem 2rem;
+                        border-radius: 10px;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        width: 100%;
+                        transition: all 0.3s ease;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+            
+                    .submit-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    }
+            
+                    .flashcards-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 2rem;
+                        padding: 2rem;
+                    }
+            
+                    .flashcard {
+                        height: 400px;
+                        perspective: 1000px;
+                        cursor: pointer;
+                    }
+            
+                    .flashcard-inner {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                        transition: transform 0.8s;
+                        transform-style: preserve-3d;
+                    }
+            
+                    .flashcard.flipped .flashcard-inner {
+                        transform: rotateY(180deg);
+                    }
+            
+                    .flashcard-front, .flashcard-back {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        backface-visibility: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 2rem;
+                        border-radius: 20px;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                        background: rgba(255, 255, 255, 0.9);
+                    }
+            
+                    .flashcard-back {
+                        transform: rotateY(180deg);
+                        background: white;
+                    }
+            
+                    .icon {
+                        font-size: 4rem;
+                        margin-bottom: 1rem;
+                        animation: bounce 2s infinite;
+                    }
+            
+                    @keyframes bounce {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-10px); }
+                    }
+            
+                    .fact {
+                        font-size: 1.2rem;
+                        line-height: 1.6;
+                        color: #2c3e50;
+                    }
+            
+                    .nav-buttons {
+                        position: fixed;
+                        bottom: 2rem;
+                        right: 2rem;
+                        display: flex;
+                        gap: 1rem;
+                    }
+            
+                    .nav-btn {
+                        background: white;
+                        border: none;
+                        padding: 1rem;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        transition: all 0.3s ease;
+                    }
+            
+                    .nav-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                    }
+            
+                    .progress-bar {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        height: 4px;
+                        background: linear-gradient(90deg, #64b3f4, #96c93d);
+                        transition: width 0.3s ease;
+                    }
+            
+                    @media (max-width: 768px) {
+                        .flashcards-container {
+                            grid-template-columns: 1fr;
+                        }
+                        .header h1 {
+                            font-size: 2rem;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="progress-bar" id="progressBar"></div>
+            
+                <div class="page input-page" id="inputPage">
+                    <div class="container">
+                        <div class="header">
+                            <h1>♻️ Waste Awareness Flashcards</h1>
+                            <p>Learn about environmental impact through interactive cards</p>
+                        </div>
+            
+                        <div class="input-container">
+                            <div class="input-group">
+                                <label for="waste-type">Select Waste Type</label>
+                                <select id="waste-type">
+                                    <option value="">Choose a waste type...</option>
+                                    <option value="plastic">Plastic Waste</option>
+                                    <option value="paper">Paper Waste</option>
+                                    <option value="food">Food Waste</option>
+                                    <option value="electronic">Electronic Waste</option>
+                                    <option value="glass">Glass Waste</option>
+                                </select>
+                            </div>
+                            <button class="submit-btn" onclick="showFlashcards()">Create Flashcards</button>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="page cards-page" id="cardsPage">
+                    <div class="container">
+                        <div class="header">
+                            <h1 id="cardTitle">Your Flashcards</h1>
+                        </div>
+                        <div id="flashcards" class="flashcards-container"></div>
+                    </div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="goBack()">↩️</button>
+                        <button class="nav-btn" onclick="shuffleCards()">🔄</button>
+                    </div>
+                </div>
+            
+                <script>
+                    const wasteInfo = {
+                        plastic: [
+                            {
+                                front: "🌊 Ocean Impact",
+                                back: "Every minute, one garbage truck worth of plastic is dumped into our oceans. By 2050, there will be more plastic than fish in the oceans."
+                            },
+                            {
+                                front: "♻️ Recycling Facts",
+                                back: "Only 9% of all plastic waste ever produced has been recycled. The rest ends up in landfills or the environment."
+                            },
+                            {
+                                front: "⏰ Decomposition",
+                                back: "A plastic bottle takes 450 years to decompose. Plastic bags take up to 1000 years to break down in the environment."
+                            },
+                            {
+                                front: "🌍 Global Impact",
+                                back: "Microplastics have been found at the bottom of the Mariana Trench and on Mount Everest. They're now in our food chain and drinking water."
+                            },
+                            { 
+                                front: "🛑 Single-Use Plastics", 
+                                back: "Over 50% of plastic produced is for single-use purposes, leading to massive waste accumulation." 
+                            },
+                            {
+                                 front: "🐢 Wildlife Harm",
+                                 back: "Millions of marine animals die every year due to plastic pollution, often mistaking it for food." 
+                            }
+                        ],
+
+            paper: [
+                {
+                    front: "🌳 Tree Conservation",
+                    back: "Recycling one ton of paper saves 17 trees and 7,000 gallons of water."
+                },
+                {
+                    front: "📚 Paper Facts",
+                    back: "The average office worker uses 10,000 sheets of paper per year. 45% of paper printed ends up in the trash by the end of the day."
+                },
+                {
+                    front: "♻️ Recycling Impact",
+                    back: "Recycling paper produces 73% less air pollution than making new paper from raw materials."
+                },
+                {
+                    front: "💭 Energy Savings",
+                    back: "Recycling half of global waste paper would avoid 1.6 billion tons of CO2 equivalent."
+                },
+                { 
+                front: "📝 Paper Waste Reduction",
+                back: "Going paperless in offices can save thousands of trees each year, reducing      carbon footprints."
+                },
+                {
+                front: "🌎 Landfill Reduction", 
+                back: "Paper makes up about 26% of total landfill waste, emphasizing the need for better recycling practices."
+                 }
+
+            ],
+            food: [
+                {
+                    front: "🍎 Food Waste Stats",
+                    back: "One-third of all food produced globally goes to waste. That's 1.3 billion tons annually!"
+                },
+                {
+                    front: "🌱 Environmental Impact",
+                    back: "Food waste in landfills produces methane, a greenhouse gas 25 times more potent than CO2."
+                },
+                {
+                    front: "💧 Water Waste",
+                    back: "The water used to produce wasted food could fill 125,000 Olympic swimming pools."
+                },
+                {
+                    front: "💭 Solution",
+                    back: "Composting food waste can reduce methane emissions and create nutrient-rich soil."
+                },
+                
+                { front: "🥦 Household Waste",
+                  back: "Households are responsible for 53% of global food waste. Planning meals can greatly reduce this waste."
+                 },
+                {
+                     front: "💰 Economic Loss",
+                      back: "Food waste costs the global economy around $940 billion each year." 
+                }
+
+            ],
+            electronic: [
+                {
+                    front: "📱 E-Waste Volume",
+                    back: "The world generates 50 million tons of e-waste annually. Only 20% is formally recycled."
+                },
+                {
+                    front: "⚡ Precious Metals",
+                    back: "One ton of smartphones contains more gold than one ton of gold ore!"
+                },
+                {
+                    front: "🔋 Battery Impact",
+                    back: "Lithium-ion batteries can contaminate water sources if not properly disposed of."
+                },
+                {
+                    front: "💭 Recycling Value",
+                    back: "E-waste contains precious metals worth $57 billion annually, most of which is lost."
+                },
+                { front: "🔌 E-Waste Growth", 
+                  back: "E-waste is the fastest-growing waste stream in the world, increasing by 3-4% annually." 
+                },
+                { 
+                    front: "🌍 Toxic Effects", 
+                    back: "Many e-waste components contain toxic substances like lead and mercury, which can cause severe health issues." 
+                }
+
+            ],
+            glass: [
+                {
+                    front: "🍶 Glass Facts",
+                    back: "Glass can be recycled endlessly without losing quality or purity."
+                },
+                {
+                    front: "♻️ Energy Savings",
+                    back: "Recycling one glass bottle saves enough energy to power a computer for 30 minutes."
+                },
+                {
+                    front: "⏳ Decomposition",
+                    back: "Glass takes over 1 million years to decompose naturally in the environment."
+                },
+                {
+                    front: "💭 Recycling Impact",
+                    back: "Using recycled glass reduces related water pollution by 50% and air pollution by 20%."
+                },
+                { 
+                    front: "🔥 Glass Manufacturing", 
+                    back: "Making new glass from recycled materials requires 30% less energy than creating it from raw materials." 
+                },
+                { front: "🏭 Landfill Space", 
+                  back: "Glass makes up around 5% of landfill waste despite being fully recyclable." 
+                }
+
+            ]
+
+                    };
+            
+                    let currentCards = [];
+                    let progress = 0;
+            
+                    function showFlashcards() {
+                        const wasteType = document.getElementById('waste-type').value;
+                        if (!wasteType) {
+                            alert('Please select a waste type');
+                            return;
+                        }
+            
+                        document.body.classList.add('show-cards');
+                        document.getElementById('cardTitle').textContent = 
+                            `${wasteType.charAt(0).toUpperCase() + wasteType.slice(1)} Waste Flashcards`;
+                        
+                        generateFlashcards(wasteType);
+                        updateProgress(0);
+                    }
+            
+                    function generateFlashcards(wasteType) {
+                        const flashcardsContainer = document.getElementById('flashcards');
+                        flashcardsContainer.innerHTML = '';
+                        currentCards = wasteInfo[wasteType];
+            
+                        currentCards.forEach((info, index) => {
+                            const flashcard = document.createElement('div');
+                            flashcard.className = `flashcard animate__animated animate__fadeIn`;
+                            flashcard.style.animationDelay = `${index * 0.2}s`;
+            
+                            flashcard.innerHTML = `
+                                <div class="flashcard-inner">
+                                    <div class="flashcard-front">
+                                        <div class="icon">${info.front.split(' ')[0]}</div>
+                                        <h3>${info.front.split(' ').slice(1).join(' ')}</h3>
+                                    </div>
+                                    <div class="flashcard-back">
+                                        <p class="fact">${info.back}</p>
+                                    </div>
+                                </div>
+                            `;
+            
+                            flashcard.addEventListener('click', () => {
+                                flashcard.classList.toggle('flipped');
+                                updateProgress();
+                            });
+            
+                            flashcardsContainer.appendChild(flashcard);
+                        });
+                    }
+            
+                    function goBack() {
+                        document.body.classList.remove('show-cards');
+                        progress = 0;
+                        updateProgress();
+                    }
+            
+                    function shuffleCards() {
+                        const flashcardsContainer = document.getElementById('flashcards');
+                        const cards = Array.from(flashcardsContainer.children);
+                        
+                        for (let i = cards.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            flashcardsContainer.appendChild(cards[j]);
+                        }
+                    }
+            
+                    function updateProgress() {
+                        const flippedCards = document.querySelectorAll('.flipped').length;
+                        const totalCards = currentCards.length;
+                        progress = (flippedCards / totalCards) * 100;
+                        document.getElementById('progressBar').style.width = `${progress}%`;
+                    }
+                </script>
+            </body>
+            </html>
