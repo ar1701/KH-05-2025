@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+
+<h2>My Waste Posts</h2>
+<ul>
+  <% wastes.forEach((waste) => { %>
+    <li>
+      <img src="<%= waste.imageUrl %>" alt="Waste Image" width="150">
+      <p><%= waste.name %> - <%= waste.quantity %> kg</p>
+      <p><%= waste.city %> (Sector <%= waste.sector %>)</p>
+      
+      <form action="/waste/<%= waste._id %>?_method=PUT" method="POST">
+        <input type="text" name="name" value="<%= waste.name %>">
+        <input type="number" name="quantity" value="<%= waste.quantity %>">
+        <input type="text" name="city" value="<%= waste.city %>">
+        <input type="text" name="sector" value="<%= waste.sector %>">
+        <button type="submit">Update</button>
+      </form>
+
+      <form action="/waste/<%= waste._id %>?_method=DELETE" method="POST">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+<%- include('partials/footer') %>

@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+
+<h2>All Waste Posts</h2>
+<ul>
+  <% wastes.forEach((waste) => { %>
+    <li>
+      <img src="<%= waste.imageUrl %>" alt="Waste Image" width="150">
+      <p><%= waste.name %> - <%= waste.quantity %> kg</p>
+      <p><%= waste.city %> (Sector <%= waste.sector %>)</p>
+      <p>Posted by: <%= waste.user.name %></p>
+    </li>
+  <% }) %>
+</ul>
+
+<%- include('partials/footer') %>

@@ -7,24 +7,14 @@ cloudinary.config({
   api_secret: process.env.CLOUD_SECRET_KEY,
 });
 
-const storage = new CloudinaryStorage({
+const storage1 = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "WanderLust_DEV",
+    folder: "WMS",
     allowedFormats: ["png", "jpeg", "jpg", "pdf"], // allowed file formats
-    fileFilter: (req, file) => {
-      // Ensure that only pdf files are allowed
-      if (file.mimetype === 'application/pdf') {
-        // Accept the file
-        return true;
-      } else {
-        // Reject the file
-        return false;
-      }
-    }
   },
 });
 
 module.exports = {
-  cloudinary, storage,
+  cloudinary, storage1,
 };

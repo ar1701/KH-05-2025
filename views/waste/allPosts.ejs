@@ -1,0 +1,57 @@
+<%- include("../partials/navbar") %>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">All Waste Posts</h2>
+  <div class="row">
+    <% wastes.forEach(waste => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow">
+          <img src="<%= waste.imageUrl %>" class="card-img-top" alt="Waste Image">
+          <div class="card-body">
+            <h5 class="card-title"><%= waste.name %></h5>
+            <p class="card-text">Quantity: <%= waste.quantity %> kg</p>
+            <p class="card-text">Location: <%= waste.city %>, Sector <%= waste.sector %></p>
+            <% if (waste.user.toString() === user._id.toString()) { %>
+              <button class="btn btn-primary" onclick="editPost('<%= waste._id %>')">Edit</button>
+              <button class="btn btn-danger" onclick="deletePost('<%= waste._id %>')">Delete</button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</div>
+
+<script>
+    async function editPost(id) {
+      const name = prompt("Enter new name:");
+      const quantity = prompt("Enter new quantity:");
+      const city = prompt("Enter new city:");
+      const sector = prompt("Enter new sector:");
+    
+      if (!name || !quantity || !city || !sector) return alert("All fields are required!");
+    
+      const response = await fetch(`/waste/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, quantity, city, sector }),
+      });
+    
+      const data = await response.json();
+      alert(data.message);
+      if (response.ok) location.reload();
+    }
+    
+    async function deletePost(id) {
+      if (!confirm("Are you sure?")) return;
+    
+      const response = await fetch(`/waste/${id}`, { method: "DELETE" });
+      const data = await response.json();
+    
+      alert(data.message);
+      if (response.ok) location.reload();
+    }
+    </script>
+    
+
+<%- include("../partials/footer") %>
