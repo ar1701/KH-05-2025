@@ -1,10 +1,15 @@
 <%- include('partials/header') %>
+<style>
+    .card-body{
+        padding-bottom: 800px;
+    }
+</style>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-body p-5">
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6 mb-5">
+            <div class="card shadow-lg mb-5">
+                <div class="card-body p-5 mb-5">
                     <h2 class="text-center mb-4">Sign Up</h2>
                     
                   
@@ -28,6 +33,18 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="role" class="form-label">Sign Up as</label>
+                            <select class="form-control" id="role" name="role" required onchange="toggleAdminKey()">
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="adminKeyDiv" style="display: none;">
+                            <label for="adminKey" class="form-label">Enter Your Admin Key</label>
+                            <input type="password" class="form-control" id="adminKey" name="adminKey">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
@@ -35,7 +52,7 @@
                             <label for="confirmPassword" class="form-label">Confirm Password</label>
                             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                         </div>
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-success btn-lg">Sign Up</button>
                         </div>
                     </form>
@@ -68,6 +85,19 @@
             }
         });
     });
+
+
+   
+    function toggleAdminKey() {
+        const role = document.getElementById('role').value;
+        const adminKeyDiv = document.getElementById('adminKeyDiv');
+        if (role === 'admin') {
+            adminKeyDiv.style.display = 'block';
+        } else {
+            adminKeyDiv.style.display = 'none';
+        }
+    }
+
     </script>
     
 

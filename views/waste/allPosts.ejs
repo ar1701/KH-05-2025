@@ -15,6 +15,7 @@
         />
         <div class="card-body p-2" style="height: 150px;">
           <h6 class="card-title"><%= waste.name %></h6>
+          <p class="card-text mb-1">Category: <%= waste.category %></p>
           <p class="card-text mb-1">Quantity: <%= waste.quantity %> kg</p>
           <p class="card-text mb-2">Location: <%= waste.city %>, Sector <%= waste.sector %></p>
           <% if (waste.user.toString() === user._id.toString()) { %>
@@ -69,5 +70,12 @@
     }
   }
 </script>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 
 <%- include("../partials/footer") %>

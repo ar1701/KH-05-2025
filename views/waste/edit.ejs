@@ -17,6 +17,21 @@
     </div>
 
     <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select name="category" class="form-select" required>
+        <option value="">Select a category</option>
+        <option value="Plastic" <%= waste.category === "Plastic" ? "selected" : "" %>>Plastic</option>
+        <option value="Paper" <%= waste.category === "Paper" ? "selected" : "" %>>Paper</option>
+        <option value="Metal" <%= waste.category === "Metal" ? "selected" : "" %>>Metal</option>
+        <option value="Glass" <%= waste.category === "Glass" ? "selected" : "" %>>Glass</option>
+        <option value="Organic" <%= waste.category === "Organic" ? "selected" : "" %>>Organic</option>
+        <option value="E-waste" <%= waste.category === "E-waste" ? "selected" : "" %>>E-waste</option>
+        <option value="Textile" <%= waste.category === "Textile" ? "selected" : "" %>>Textile</option>
+        <option value="Expired Food" <%= waste.category === "Expired Food" ? "selected" : "" %>>Expired Food</option>
+        <option value="Others" <%= waste.category === "Others" ? "selected" : "" %>>Others</option>
+      </select>
+
+    <div class="mb-3">
       <label class="form-label">Quantity (kg)</label>
       <input type="number" name="quantity" class="form-control" value="<%= waste.quantity %>" required>
     </div>
