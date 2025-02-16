@@ -237,6 +237,9 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send("Internal Server Error");
 });
 
+app.get("/flashcard", isLoggedIn, (req, res) => {
+  res.render("flashcard");
+});
 
 app.get("/waste-classification", isLoggedIn, async (req, res) => {
   res.render("waste-classification");
@@ -276,7 +279,7 @@ app.post("/waste-classification", upload.single("image"), async (req, res) => {
 Biodegradable/Non-biodegradable/Hazardous: [Your Answer]
 Type of Waste: [Your Answer]
 Appropriate Bin: [Your Answer]
-Proper Method for Decomposition: [Your Answer]`,
+Proper Method for Decomposition: [Your Answer]. Don't give any preambles or explanations, just the answers.`,
       {
         fileData: {
           fileUri: uploadResult.file.uri,
@@ -327,6 +330,7 @@ app.post("/chatbot", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
   try {

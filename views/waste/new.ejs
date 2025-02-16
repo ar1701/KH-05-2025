@@ -4,7 +4,30 @@
 <style>
   form {
       color: black;
+      
   }
+  html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #343a40; /* Dark background */
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+ 
   .spinner {
       display: none;
       width: 3rem;
@@ -24,10 +47,10 @@
   }
 </style>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
   <h2 class="text-center">Add Waste Post</h2>
-  <form action="/waste" method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light" id="wasteForm">
-    <div class="mb-3">
+  <form action="/waste" method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light mb-5" id="wasteForm">
+    <div class="mb-3 ">
       <label class="form-label">Waste Name</label>
       <input type="text" name="name" class="form-control" required>
     </div>
@@ -68,7 +91,10 @@
   </form>
 </div>
 
-<%- include("../partials/footer") %>
+<footer class="bg-dark text-white text-center py-3 mt-auto">
+  <p class="mb-0">© 2025 Eco Waste Management. All rights reserved.</p>
+</footer>
+
 
 <script>
   document.getElementById("wasteForm").addEventListener("submit", function(event) {
