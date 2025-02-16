@@ -1,4 +1,4 @@
-## **WasteBuddy – From Waste to Wonder**  
+## **WASTEBUDDY – FROM WASTE TO WONDER**  
 
 ![Logo](WasteBuddy_Logo.jpeg)  
 
@@ -7,7 +7,7 @@
 ## **Overview**  
 ---
 ### **Revolutionizing Waste Management with AI and Sustainability**
-**WasteBuddy** is an AI-powered platform transforming **domestic waste into valuable resources** through smart waste management, recycling, and sustainability. It enables users to **identify recyclable waste** via **AI image recognition**, consult an **AI chatbot**, and trade waste through a **marketplace**. Expired food is safely redirected to **food banks or composting centers**, while **AI-driven waste density analysis** optimizes collection points. Users earn **redeemable credits** for responsible disposal, track their **carbon footprint**, and engage with **gamified awareness tools**. WasteBuddy promotes **eco-friendly practices** through **technology, incentives, and collaboration**, building a cleaner and sustainable future. 🌍♻️
+**WASTEBUDDY** is an AI-powered platform transforming **domestic waste into valuable resources** through smart waste management, recycling, and sustainability. It enables users to **identify recyclable waste** via **AI image recognition**, consult an **AI chatbot**, and trade waste through a **marketplace**. Expired food is safely redirected to **food banks or composting centers**, while **AI-driven waste density analysis** optimizes collection points. Users earn **redeemable credits** for responsible disposal, track their **carbon footprint**, and engage with **gamified awareness tools**. WasteBuddy promotes **eco-friendly practices** through **technology, incentives, and collaboration**, building a cleaner and sustainable future. 🌍♻️
 
 
 ## **🌱 Inspiration** 
