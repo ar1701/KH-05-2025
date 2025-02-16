@@ -399,13 +399,29 @@ app.get("/chatbot", isLoggedIn, (req, res) => {
   res.render("chatbot");
 });
 
+// app.post("/chatbot", async (req, res) => {
+//   try {
+//     const prompt = req.body.message;
+//     const response = await generateResponse(prompt);
+//     // console.log(response);
+//     res.json({ message: response });
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
 app.post("/chatbot", async (req, res) => {
   try {
-    const prompt = req.body.message;
-    const response = await generateResponse(prompt);
-    // console.log(response);
-    res.json({ message: response });
+    const userInput = req.body.message;
+    // console.log("User input:", userInput);
+    const response = await axios.post('https://groclake.onrender.com/chat', {
+      "user_input": userInput
+    });
+    // console.log("Response from external chatbot:", response.data.bot_reply);
+
+    res.json({ message: response.data.bot_reply });
   } catch (error) {
+    console.error("Error communicating with external chatbot:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
