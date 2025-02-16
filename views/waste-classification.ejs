@@ -1,28 +1,25 @@
 <%- include('partials/header') %>
 
 <style>
+  .message {
+    border-radius: 8px;
+    margin: 8px 0;
+  }
 
+  .message.user {
+    margin-left: 20%;
+  }
 
-    .message {
-  border-radius: 8px;
-  margin: 8px 0;
-}
+  .message.bot {
+    margin-right: 20%;
+  }
 
-.message.user {
-  margin-left: 20%;
-}
+  .chat-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+  }
 
-.message.bot {
-  margin-right: 20%;
-}
-
-.chat-container {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 15px;
-}
-
- 
   .upload-container {
     display: flex;
     flex-direction: column;
@@ -32,8 +29,9 @@
     border-radius: 10px;
     background: #f8f9fa;
   }
-/* 🎨 Image Preview Container */
-.image-preview-container {
+
+  /* 🎨 Image Preview Container */
+  .image-preview-container {
     display: none; /* Hide initially */
     justify-content: center;
     align-items: center;
@@ -44,17 +42,16 @@
     overflow: hidden;
     margin: 10px auto;
     background-color: #f8f9fa; /* Light gray background */
-}
+  }
 
-/* 📷 Image Preview */
-.image-preview {
+  /* 📷 Image Preview */
+  .image-preview {
     width: 100%;  /* Make the image fill the container */
     height: 100%;
     object-fit: cover; /* Ensures the image fills the space while maintaining aspect ratio */
     display: none;
     border-radius: 10px; /* Match the container border-radius */
-}
-
+  }
 
   .upload-btn {
     display: inline-block;
@@ -104,6 +101,7 @@
     background: #e9f5e9;
     border: 2px solid #28a745;
     display: none;
+    margin-bottom: 100px;
   }
 
   .result-text {
@@ -120,9 +118,9 @@
       <img id="imagePreview" class="image-preview" />
     </div>
     <input type="file" id="imageInput" accept="image/*" hidden />
-    <label for="imageInput" class="upload-btn"
-      ><i class="fas fa-upload"></i> Choose Image</label
-    >
+    <label for="imageInput" class="upload-btn">
+      <i class="fas fa-upload"></i> Choose Image
+    </label>
     <button id="uploadBtn" class="upload-btn">
       <i class="fas fa-check"></i> Upload
     </button>
@@ -139,27 +137,34 @@
 </div>
 
 <script>
-  
-  document
-    .getElementById("imageInput")
-    .addEventListener("change", function (e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        const previewContainer = document.querySelector(
-          ".image-preview-container"
-        );
-        const preview = document.getElementById("imagePreview");
+  // Function to format text by replacing **text** with a line break and bold text
+  function formatText(text) {
+    // Ensure proper bold formatting for **text**
+    text = text.replace(/\*\*(.*?)\*+/g, '<br><strong>$1</strong>');
 
-        reader.onload = function (e) {
-          preview.src = e.target.result;
-          preview.style.display = "block"; // Ensure image is visible
-          previewContainer.style.display = "flex";
-        };
+    // Replace "- " with "<br>• " for better readability (bullet points)
+    text = text.replace(/-\s/g, '<br>• ');
 
-        reader.readAsDataURL(file);
-      }
-    });
+    return text;
+}
+
+
+  document.getElementById("imageInput").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      const previewContainer = document.querySelector(".image-preview-container");
+      const preview = document.getElementById("imagePreview");
+
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "block"; // Ensure image is visible
+        previewContainer.style.display = "flex";
+      };
+
+      reader.readAsDataURL(file);
+    }
+  });
 
   document.getElementById("uploadBtn").addEventListener("click", async () => {
     const imageInput = document.getElementById("imageInput");
@@ -193,15 +198,15 @@
       resultSection.style.display = "block";
 
       if (data.result) {
-        resultDiv.innerHTML = `<p class="result-text">${data.result}</p>`;
+        // Format the result text before displaying it
+        const formattedResult = formatText(data.result);
+        resultDiv.innerHTML = `<p class="result-text">${formattedResult}</p>`;
       } else {
         resultDiv.innerHTML = `<p class="result-text text-danger">Error: No classification result received</p>`;
       }
     } catch (error) {
       console.error("Error:", error);
-      document.getElementById(
-        "result"
-      ).innerHTML = `<p class="result-text text-danger">Error processing image.</p>`;
+      document.getElementById("result").innerHTML = `<p class="result-text text-danger">Error processing image.</p>`;
     } finally {
       document.getElementById("loading").style.display = "none";
     }

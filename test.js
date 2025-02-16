@@ -15,7 +15,7 @@ const wasteManagementKeywords = [
     "waste segregation", "zero waste", "circular economy", "waste reduction", "incineration",
     "vermicomposting", "municipal waste", "toxic waste", "pollution control", "carbon footprint",
     "green waste", "ocean waste", "waste-to-energy", "solid waste", "medical waste",
-    "industrial waste", "sustainable practices"
+    "industrial waste", "decompose", "sustainable practices"
 ];
 
 function isRelevantQuestion(question) {
