@@ -12,7 +12,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const multer = require("multer");
 const session = require("express-session");
-
+const calculatePoints = require("./calculatePoint.js");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const MongoStore = require("connect-mongo");
@@ -447,6 +447,13 @@ app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
       user: req.user._id,
     });
 
+    const pointsEarned = calculatePoints(category, quantity);
+
+    const user = await User.findById(req.user._id);
+    user.points += pointsEarned;
+    await user.save();
+
+
     await waste.save();
     res.redirect("/waste/all"); // Redirect to show all waste posts
   } catch (error) {
@@ -541,26 +548,31 @@ app.put("/waste/:id", isLoggedIn, upload1.single("image"), async (req, res) => {
 
 // DELETE - Remove a waste post
 app.delete("/waste/:id", isLoggedIn, async (req, res) => {
-  // console.log("User attempting delete:", req.user);
-
   try {
     const { id } = req.params;
+
+    // Check if the id is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Deleted" });
+    }
+
     const waste = await Waste.findOneAndDelete({ _id: id, user: req.user._id });
 
-    if (!waste) return res.status(403).json({ error: "Unauthorized delete" });
+    if (!waste) {
+      return res.status(403).json({ error: "Unauthorized delete" });
+    }
 
     if (waste.imageUrl) {
       const imagePublicId = waste.imageUrl.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(imagePublicId);
     }
+
     res.redirect("/waste/all");
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "Post Deleted" });
-    res.redirect("/waste/all");
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 app.get("/admin/analytics", async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();

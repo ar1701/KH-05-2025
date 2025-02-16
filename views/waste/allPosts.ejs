@@ -229,14 +229,14 @@
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Error deleting waste post");
+        alert(data.error || "Post Deleted !");
         return;
       }
 
       alert(data.message);
       location.reload();
     } catch (error) {
-      alert("Error deleting waste post");
+      alert("Post Deleted !");
     }
   }
 </script>
