@@ -10,6 +10,10 @@ const userSchema = new Schema({
   },
   name: String,
   phone: Number,
+  points: {
+    type: Number,
+    default: 0,
+  },
 });
 userSchema.plugin(passportLocalMongoose);
 const User = new mongoose.model("User", userSchema);
