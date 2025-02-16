@@ -5,13 +5,14 @@ body {
 
 /* Hero Section */
 .hero {
-    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeOYN_vu7x2J1sPlEF2hffO7il0eCl7zqqeA&s') center center/contain;
+    background: url('/images/four.jpeg') center center/contain;
     height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: rgb(51, 12, 65);
+    font-weight: bolder;
+    color: rgb(24, 66, 54);
 }
 
 /* Carousel */

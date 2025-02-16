@@ -14,28 +14,54 @@ os.environ['GROCLAKE_ACCOUNT_ID'] = GROCLAKE_ACCOUNT_ID
 # Initialize Groclake model instance
 model_lake = ModelLake()
 
+# @app.route('/translate', methods=['POST'])
+# def translate():
+#     try:
+#         data = request.json
+#         text = data.get('text')
+#         source_lang = data.get('source_lang')
+#         target_lang = data.get('target_lang')
+
+#         if not text or not source_lang or not target_lang:
+#             return jsonify({"error": "Invalid input"}), 400
+
+#         translation_request = {
+#             "text": [text],
+#             "source_lang_code": source_lang,
+#             "target_lang_code": target_lang,
+#             "model": "openai"
+#         }
+
+#         translation_response = model_lake.translate(translation_request)
+#         translated_text = translation_response['translated_text'][0]
+
+#         return jsonify({"translated_text": translated_text}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
+
 @app.route('/translate', methods=['POST'])
 def translate():
     try:
         data = request.json
-        text = data.get('text')
+        texts = data.get('texts', [])  # Expecting an array of texts
         source_lang = data.get('source_lang')
         target_lang = data.get('target_lang')
 
-        if not text or not source_lang or not target_lang:
+        if not texts or not source_lang or not target_lang:
             return jsonify({"error": "Invalid input"}), 400
 
-        translation_request = {
-            "text": [text],
+        translation_requests = {
+            "text": texts,
             "source_lang_code": source_lang,
             "target_lang_code": target_lang,
             "model": "openai"
         }
 
-        translation_response = model_lake.translate(translation_request)
-        translated_text = translation_response['translated_text'][0]
+        translation_response = model_lake.translate(translation_requests)
+        translated_texts = translation_response.get('translated_text', [])
 
-        return jsonify({"translated_text": translated_text}), 200
+        return jsonify({"translated_texts": translated_texts}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

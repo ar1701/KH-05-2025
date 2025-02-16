@@ -1,113 +1,205 @@
 <%- include("partials/header") %>
+<link rel="stylesheet" href="/css/index.css" />
 <body>
-    <!-- Hero Section -->
-    <div class="hero">
-        <div class="container text-center">
-            <h1><b>Eco Waste Management</b></h1>
-            <p class="lead">AI-powered waste management for a cleaner planet</p>
-        </div>
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="container text-center">
+      <h1><b>Waste Management System</b></h1>
+      <p class="lead">AI-powered waste management for a cleaner planet</p>
     </div>
+  </div>
 
-    <!-- Waste Management Facts Carousel -->
-    <div id="wasteFactsCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
-        <div class="carousel-inner text-center">
-            <div class="carousel-item active">
-                <h3>🌎 Every year, 2.1 billion tons of waste is produced worldwide.</h3>
-            </div>
-            <div class="carousel-item">
-                <h3>♻️ Only 9% of all plastic waste ever produced has been recycled.</h3>
-            </div>
-            <div class="carousel-item">
-                <h3>🚮 The world dumps <b>2.12 million</b> tons** of waste daily.</h3>
-            </div>
-            <div class="carousel-item">
-                <h3>🔥 Landfills contribute **11% of methane gas emissions globally**.</h3>
-            </div>
-            <div class="carousel-item">
-                <h3>🔄 Germany has the highest recycling rate (~67%), while many countries lag behind.</h3>
-            </div>
-            <div class="carousel-item">
-                <h3>🌊 By 2050, plastic in oceans could outweigh fish if trends continue.</h3>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#wasteFactsCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#wasteFactsCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+  <!-- Waste Management Facts Carousel -->
+  <div
+    id="wasteFactsCarousel"
+    class="carousel slide mt-5"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-inner text-center">
+      <div class="carousel-item active">
+        <h3 class="data-translate">
+          🌎 Every year, 2.1 billion tons of waste is produced worldwide.
+        </h3>
+      </div>
+      <div class="carousel-item">
+        <h3 class="data-translate">
+          ♻️ Only 9% of all plastic waste ever produced has been recycled.
+        </h3>
+      </div>
+      <div class="carousel-item">
+        <h3 class="data-translate">
+          🚮 The world dumps <b>2.12 million</b> tons** of waste daily.
+        </h3>
+      </div>
+      <div class="carousel-item">
+        <h3 class="data-translate">
+          🔥 Landfills contribute **11% of methane gas emissions globally**.
+        </h3>
+      </div>
+      <div class="carousel-item">
+        <h3 class="data-translate">
+          🔄 Germany has the highest recycling rate (~67%), while many countries
+          lag behind.
+        </h3>
+      </div>
+      <div class="carousel-item">
+        <h3 class="data-translate">
+          🌊 By 2050, plastic in oceans could outweigh fish if trends continue.
+        </h3>
+      </div>
     </div>
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#wasteFactsCarousel"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#wasteFactsCarousel"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
 
-    <!-- Real-Time Impact Counters -->
-    <div class="container text-center mt-5">
-        <h2>🌱 Our Impact So Far</h2>
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <h3 id="wasteRecycled">0</h3>
-                <p>KG Waste Recycled</p>
-            </div>
-            <div class="col-md-4">
-                <h3 id="plasticSaved">0</h3>
-                <p>Plastic Bottles Saved</p>
-            </div>
-            <div class="col-md-4">
-                <h3 id="co2Reduced">0</h3>
-                <p>KG CO₂ Emissions Reduced</p>
-            </div>
-        </div>
+  <!-- Real-Time Impact Counters -->
+  <div class="container text-center mt-5">
+    <h2>🌱 Our Impact So Far</h2>
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <h3 id="wasteRecycled">0</h3>
+        <p>KG Waste Recycled</p>
+      </div>
+      <div class="col-md-4">
+        <h3 id="plasticSaved">0</h3>
+        <p>Plastic Bottles Saved</p>
+      </div>
+      <div class="col-md-4">
+        <h3 id="co2Reduced">0</h3>
+        <p>KG CO₂ Emissions Reduced</p>
+      </div>
     </div>
+  </div>
 
-    <!-- Gamified Eco Challenges -->
-    <div class="container mb-5 photo">
-        <h2 class="text-center">🎮 Eco Challenges - Join & Earn Rewards!</h2>
-        <div class="row text-center mt-4">
-            <div class="col-md-4">
-                <img src="https://images.squarespace-cdn.com/content/v1/584c6ba93e00be3a72c07e26/9be51854-4f76-4648-bf51-6f2d41996969/Blue+Green+Illustrated+Say+No+To+Plastic+Bag+Instagram+Post.jpg" alt="Challenge" class="challenge-img">
-                <h5>🌿 7-Day Plastic-Free Challenge</h5>
-                <p>Avoid plastic for 7 days & earn eco-points!</p>
-            </div>
-            <div class="col-md-4">
-                <img src="https://www.green.earth/hubfs/planting%20trees.png" alt="Challenge" class="challenge-img">
-                <h5>🌳 Plant & Share</h5>
-                <p>Plant a tree & share a photo to get rewards.</p>
-            </div>
-            <div class="col-md-4">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCNL7FIjSXSO-8LzYm2NXlGxN2lAEQw-nJ7w&s" alt="Challenge" class="challenge-img">
-                <h5>🚯 Zero Waste Week</h5>
-                <p>Track your waste & reduce it to win prizes.</p>
-            </div>
-        </div>
+  <!-- Gamified Eco Challenges -->
+  <div class="container mb-5 photo">
+    <h2 class="text-center">🎮 Eco Challenges - Join & Earn Rewards!</h2>
+    <div class="row text-center mt-4">
+      <div class="col-md-4">
+        <img
+          src="https://images.squarespace-cdn.com/content/v1/584c6ba93e00be3a72c07e26/9be51854-4f76-4648-bf51-6f2d41996969/Blue+Green+Illustrated+Say+No+To+Plastic+Bag+Instagram+Post.jpg"
+          alt="Challenge"
+          class="challenge-img"
+        />
+        <h5>🌿 7-Day Plastic-Free Challenge</h5>
+        <p>Avoid plastic for 7 days & earn eco-points!</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          src="https://www.green.earth/hubfs/planting%20trees.png"
+          alt="Challenge"
+          class="challenge-img"
+        />
+        <h5>🌳 Plant & Share</h5>
+        <p>Plant a tree & share a photo to get rewards.</p>
+      </div>
+      <div class="col-md-4">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCNL7FIjSXSO-8LzYm2NXlGxN2lAEQw-nJ7w&s"
+          alt="Challenge"
+          class="challenge-img"
+        />
+        <h5>🚯 Zero Waste Week</h5>
+        <p>Track your waste & reduce it to win prizes.</p>
+      </div>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <%- include("partials/footer") %>
+  </div>
+  <br />
+  <br />
+  <br />
+  <br />
+  <%- include("partials/footer") %>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Live Counter Script -->
-    <script>
-        function animateValue(id, start, end, duration) {
-            let obj = document.getElementById(id);
-            let range = end - start;
-            let increment = range / (duration / 60);
-            let current = start;
-            let step = function() {
-                current += increment;
-                obj.innerText = Math.floor(current);
-                if (current < end) {
-                    requestAnimationFrame(step);
-                } else {
-                    obj.innerText = end;
-                }
-            };
-            step();
+  <!-- Live Counter Script -->
+  <script>
+    document
+      .getElementById("languageSelector")
+      .addEventListener("change", function () {
+        let selectedLang = this.value;
+        let texts = [];
+
+        // Collect all translatable text
+        document.querySelectorAll("[data-translate]").forEach((element) => {
+          texts.push(element.innerText);
+        });
+
+        fetch("http://localhost:5500/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            texts: texts,
+            source_lang: "en",
+            target_lang: selectedLang,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.translated_texts) {
+              let i = 0;
+              document
+                .querySelectorAll("[data-translate]")
+                .forEach((element) => {
+                  element.innerText = data.translated_texts[i++];
+                });
+            }
+          })
+          .catch((error) => console.error("Translation error:", error));
+      });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      let savedLang = localStorage.getItem("selectedLanguage");
+      if (savedLang) {
+        document.getElementById("languageSelector").value = savedLang;
+        document
+          .getElementById("languageSelector")
+          .dispatchEvent(new Event("change"));
+      }
+    });
+
+    document
+      .getElementById("languageSelector")
+      .addEventListener("change", function () {
+        localStorage.setItem("selectedLanguage", this.value);
+      });
+
+    function animateValue(id, start, end, duration) {
+      let obj = document.getElementById(id);
+      let range = end - start;
+      let increment = range / (duration / 60);
+      let current = start;
+      let step = function () {
+        current += increment;
+        obj.innerText = Math.floor(current);
+        if (current < end) {
+          requestAnimationFrame(step);
+        } else {
+          obj.innerText = end;
         }
+      };
+      step();
+    }
 
-        animateValue("wasteRecycled", 0, 52438, 2000);
-        animateValue("plasticSaved", 0, 29872, 2000);
-        animateValue("co2Reduced", 0, 10294, 2000);
-    </script>
-
+    animateValue("wasteRecycled", 0, 52438, 2000);
+    animateValue("plasticSaved", 0, 29872, 2000);
+    animateValue("co2Reduced", 0, 10294, 2000);
+  </script>
+</body>
