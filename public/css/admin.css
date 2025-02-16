@@ -1,67 +1,170 @@
-/* General Styling */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-}
-
-/* Navbar Styling */
-.navbar {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-brand {
+/* ==========================================================================
+   Global Styles
+   ========================================================================== */
+   body.admin-body {
+    background: #1b1e23;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* ==========================================================================
+     Navbar
+     ========================================================================== */
+  .navbar {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .navbar-brand {
     font-size: 1.5rem;
     font-weight: bold;
-}
-
-.navbar-brand img {
+  }
+  
+  .navbar-brand img.logo {
+    max-height: 40px;
     margin-right: 10px;
-}
-
-/* Sidebar Styling */
-.sidebar {
-    border-right: 1px solid #ddd;
-    height: 100vh;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar .nav-link {
-    color: #333;
-    transition: all 0.3s ease;
-}
-
-.sidebar .nav-link:hover {
-    background-color: #28a745;
-    color: white;
+  }
+  
+  .navbar-nav .nav-link {
+    color: #ffffff;
+    transition: color 0.3s ease;
+  }
+  
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link.active {
+    color: #36A2EB;
+  }
+  .chart-container {
+    max-width: 450px;  /* Restrict the width so it doesn't fill the screen */
+    margin: 0 auto;    /* Center horizontally */
+  }
+  
+  .chart-container canvas {
+    height: 300px !important; /* Control the chart height */
+  }
+  
+  /* ==========================================================================
+     Sidebar
+     ========================================================================== */
+  .sidebar {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    min-height: 90vh;
+    padding: 20px;
+  }
+  
+  .sidebar h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar .nav-link {
+    font-size: 1rem;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: background 0.3s ease, padding 0.3s ease;
     border-radius: 5px;
-}
-
-/* Card Styling */
-.card {
+  }
+  
+  .sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* ==========================================================================
+     Cards (Glassmorphism)
+     ========================================================================== */
+  .card.bg-glass {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
     border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-/* Table Styling */
-.table {
-    margin-top: 20px;
-}
-
-.table thead {
-    background-color: #28a745;
-    color: white;
-}
-
-/* Footer Styling */
-footer {
-    margin-top: 40px;
-    padding: 20px 0;
-    background-color: #333;
-    color: white;
-}
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .card.bg-glass .card-header {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 15px 20px;
+  }
+  
+  .card.bg-glass .card-body {
+    padding: 20px;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .card-text.display-4 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  /* ==========================================================================
+     Chart Containers
+     ========================================================================== */
+  .chart-container {
+    width: 100%;
+    max-width: 450px; /* Limits chart width */
+    margin: 0 auto;
+  }
+  
+  .chart-container canvas {
+    /* For a smaller height, we rely on 'maintainAspectRatio: false' in JS */
+    height: 300px !important;
+  }
+  
+  /* ==========================================================================
+     Tables & Lists
+     ========================================================================== */
+  .table {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+  
+  .table thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .list-group-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+  
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* ==========================================================================
+     Responsive Adjustments
+     ========================================================================== */
+  @media (max-width: 767.98px) {
+    .sidebar {
+      margin-bottom: 20px;
+    }
+  
+    .navbar-nav {
+      text-align: center;
+    }
+  
+    .row > div[class*="col-md-4"] {
+      margin-bottom: 20px;
+    }
+  
+    /* Make charts take full width on small screens */
+    .chart-container {
+      max-width: 100%;
+    }
+  }
+  

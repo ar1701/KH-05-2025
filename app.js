@@ -17,6 +17,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const fs = require("fs");
 const User = require("./model/user");
+const Admin = require("./model/admin");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
 const { isLoggedIn } = require("./middleware.js");
@@ -28,10 +29,9 @@ const genAI = new GoogleGenerativeAI("apiKey");
 app.locals.AppName = "WMS";
 const fileManager = new GoogleAIFileManager(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const { generateResponse } = require('./test');
+const { generateResponse } = require("./test");
 const { storage1, cloudinary } = require("./cloudConfig");
 const Waste = require("./model/waste");
-
 const upload1 = multer({ storage: storage1 });
 
 // Configure storage for uploaded files
@@ -84,9 +84,28 @@ app.set("views", path.join(__dirname, "/views"));
 // Passport setup
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+
+// Configure Passport to use different strategies for User and Admin
+passport.use("user-local", new LocalStrategy(User.authenticate()));
+passport.use("admin-local", new LocalStrategy(Admin.authenticate()));
+
+passport.serializeUser((user, done) => {
+  done(null, { id: user.id, type: user.constructor.modelName });
+});
+
+passport.deserializeUser(async (obj, done) => {
+  try {
+    if (obj.type === "User") {
+      const user = await User.findById(obj.id);
+      done(null, user);
+    } else if (obj.type === "Admin") {
+      const admin = await Admin.findById(obj.id);
+      done(null, admin);
+    }
+  } catch (err) {
+    done(err);
+  }
+});
 
 // Middleware to make user data available in templates
 app.use((req, res, next) => {
@@ -97,8 +116,7 @@ app.use((req, res, next) => {
 // Connect to the database
 async function connectDB() {
   try {
-    await mongoose.connect(dbUrl, {
-    });
+    await mongoose.connect(dbUrl, {});
     console.log("Database connection successful");
   } catch (error) {
     console.error("Database connection error:", error);
@@ -115,22 +133,6 @@ function asyncHandler(fn) {
   };
 }
 
-
-// async function uploadToGemini(filePath, mimeType) {
-//   const uploadResult = await fileManager.uploadFile(filePath, { mimeType, displayName: path.basename(filePath) });
-//   return uploadResult.file;
-// }
-
-// const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-// const generationConfig = {
-//   temperature: 1,
-//   topP: 0.95,
-//   topK: 40,
-//   maxOutputTokens: 8192,
-//   responseMimeType: "text/plain",
-// };
-
-
 // Utility for file to generative part
 function fileToGenerativePart(path, mimeType) {
   return {
@@ -141,24 +143,63 @@ function fileToGenerativePart(path, mimeType) {
   };
 }
 
-
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "/login", failure: true }),
-  (req, res) => {
-    const { username } = req.body;
-    req.session.user = { username };
-    res.redirect("/index");
-  }
-);
-
+app.post("/login", async (req, res, next) => {
+  passport.authenticate("user-local", async (err, user, info) => {
+    if (err) return next(err);
+    if (!user) {
+      return passport.authenticate("admin-local", (err, admin, info) => {
+        if (err) return next(err);
+        if (!admin) {
+          return res.redirect("/login");
+        }
+        req.logIn(admin, (err) => {
+          if (err) return next(err);
+          return res.redirect("/admin");
+        });
+      })(req, res, next);
+    }
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect("/index");
+    });
+  })(req, res, next);
+});
 
 app.get("/signup", async (req, res) => {
   res.render("signup");
+});
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { username, email, name, phone, password, role, adminKey } = req.body;
+
+    if (role === "admin") {
+      if (adminKey === process.env.ADMIN_KEY) {
+        const newAdmin = new Admin({ username, email, name, phone });
+        await Admin.register(newAdmin, password); // `passport-local-mongoose` handles hashing
+
+        passport.authenticate("admin-local")(req, res, () => {
+          res.redirect("/admin");
+        });
+      } else {
+        res.status(401).send("Invalid Admin Key");
+      }
+    } else {
+      const newUser = new User({ username, email, name, phone });
+      await User.register(newUser, password); // `passport-local-mongoose` handles hashing
+
+      passport.authenticate("user-local")(req, res, () => {
+        res.redirect("/index");
+      });
+    }
+  } catch (err) {
+    console.error("Error signing up:", err);
+    res.redirect("/signup");
+  }
 });
 
 app.get("/index", async (req, res) => {
@@ -170,29 +211,9 @@ app.get("/index", async (req, res) => {
   }
 });
 
-
-
-app.post("/signup", async (req, res) => {
-  try {
-    const { username, email, name, phone, password } = req.body;
-    const newUser = new User({ username, email, name, phone });
-
-    await User.register(newUser, password); // `passport-local-mongoose` handles hashing
-
-    passport.authenticate("local")(req, res, () => {
-      res.redirect("/index");
-    });
-  } catch (err) {
-    console.error("Error signing up:", err);
-    res.redirect("/signup");
-  }
+app.get("/admin", async (req, res) => {
+  res.render("admin");
 });
-
-app.get("/waste-classification", isLoggedIn, async (req, res) => {
-  res.render("waste-classification");
-});
-
-
 
 // Logout route
 app.get("/logout", (req, res, next) => {
@@ -210,7 +231,6 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-
 // Error handler middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -218,35 +238,37 @@ app.use((err, req, res, next) => {
 });
 
 
-
+app.get("/waste-classification", isLoggedIn, async (req, res) => {
+  res.render("waste-classification");
+});
 // Form submission route
-app.post('/waste-classification', upload.single('image'), async (req, res) => {
+app.post("/waste-classification", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
-      console.log('No file uploaded');
+      console.log("No file uploaded");
       return res.status(400).json({ message: "No file uploaded" });
     }
-    
+
     // console.log('File received:', req.file);
-    
+
     // Initialize the file manager with your API key
     const fileManager = new GoogleAIFileManager(process.env.API_KEY);
-    
+
     // Upload the file using its path and metadata
     const uploadResult = await fileManager.uploadFile(req.file.path, {
       mimeType: req.file.mimetype,
       displayName: req.file.originalname,
     });
-    
+
     // console.log(
     //   `Uploaded file ${uploadResult.file.displayName} as: ${uploadResult.file.uri}`
     // );
-    
+
     // Initialize the generative AI client with your API key
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     // Use the specified model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
+
     // Generate content using the uploaded file's URI
     const result = await model.generateContent([
       `Provide the classification of the uploaded image in a properly formatted bullet point list. Use the following structure:
@@ -262,19 +284,17 @@ Proper Method for Decomposition: [Your Answer]`,
         },
       },
     ]);
-    
+
     // Extract and log the text response
     const responseText = result.response.text();
     // console.log(responseText);
-    
+
     const formattedOutput = formatToBulletPoints(responseText);
 
-
-    return res.json({ 
-      message: "File processed successfully", 
-      result: formattedOutput 
+    return res.json({
+      message: "File processed successfully",
+      result: formattedOutput,
     });
-    
   } catch (error) {
     console.error("Error processing image:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -293,26 +313,25 @@ app.get("/waste/:id/edit", isLoggedIn, async (req, res) => {
   }
 });
 
-app.get("/chatbot", isLoggedIn,(req, res) => {
+app.get("/chatbot", isLoggedIn, (req, res) => {
   res.render("chatbot");
 });
 
-app.post('/chatbot', async (req, res) => {
+app.post("/chatbot", async (req, res) => {
   try {
-      const prompt = req.body.message;
-      const response = await generateResponse(prompt);
-      // console.log(response);
-      res.json({ message: response });
+    const prompt = req.body.message;
+    const response = await generateResponse(prompt);
+    // console.log(response);
+    res.json({ message: response });
   } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-
 app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
   try {
-    const { name, quantity, city, sector } = req.body;
-    
+    const { name, category, quantity, city, sector } = req.body;
+
     if (!req.file) {
       return res.status(400).send("Image is required");
     }
@@ -321,6 +340,7 @@ app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
 
     const waste = new Waste({
       name,
+      category,
       quantity,
       city,
       sector,
@@ -335,8 +355,6 @@ app.post("/waste", isLoggedIn, upload1.single("image"), async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-
 
 app.get("/marketplace", async (req, res) => {
   try {
@@ -391,11 +409,9 @@ app.get("/waste/new", isLoggedIn, (req, res) => {
   res.render("waste/new");
 });
 
-
-
 app.put("/waste/:id", isLoggedIn, upload1.single("image"), async (req, res) => {
   try {
-    const { name, quantity, city, sector } = req.body;
+    const { name, category, quantity, city, sector } = req.body;
     const waste = await Waste.findById(req.params.id);
 
     if (!waste || waste.user.toString() !== req.user._id.toString()) {
@@ -403,6 +419,7 @@ app.put("/waste/:id", isLoggedIn, upload1.single("image"), async (req, res) => {
     }
 
     waste.name = name;
+    waste.category = category;
     waste.quantity = quantity;
     waste.city = city;
     waste.sector = sector;
@@ -422,9 +439,6 @@ app.put("/waste/:id", isLoggedIn, upload1.single("image"), async (req, res) => {
     res.status(500).send("Error updating waste details");
   }
 });
-
-
-
 
 // DELETE - Remove a waste post
 app.delete("/waste/:id", isLoggedIn, async (req, res) => {
@@ -448,32 +462,100 @@ app.delete("/waste/:id", isLoggedIn, async (req, res) => {
   }
 });
 
+app.get("/admin/analytics", async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalWaste = await Waste.aggregate([{ $group: { _id: null, total: { $sum: "$quantity" } } }]);
+
+    const cityWiseWaste = await Waste.aggregate([
+      { $group: { _id: "$city", totalWaste: { $sum: "$quantity" } } },
+      { $sort: { totalWaste: -1 } },
+    ]);
+
+    const sectorWiseWaste = await Waste.aggregate([
+      { $group: { _id: "$sector", totalWaste: { $sum: "$quantity" } } },
+      { $sort: { totalWaste: -1 } },
+    ]);
+
+    const topContributors = await Waste.aggregate([
+      { $group: { _id: "$user", totalWaste: { $sum: "$quantity" } } },
+      { $sort: { totalWaste: -1 } },
+      { $limit: 5 },
+      { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "userData" } },
+      { $unwind: "$userData" },
+    ]);
+
+    const categoryWiseWaste = await Waste.aggregate([
+      { $group: { _id: "$category", totalWaste: { $sum: "$quantity" } } },
+      { $sort: { totalWaste: -1 } },
+    ]);
+
+    res.json({
+      totalUsers,
+      totalWaste: totalWaste[0]?.total || 0,
+      cityWiseWaste,
+      sectorWiseWaste,
+      topContributors,
+      categoryWiseWaste,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.get("/admin/waste-overview", async (req, res) => {
+  try {
+    const result = await Waste.aggregate([
+      {
+        $group: {
+          _id: {
+            city: "$city",
+            // Format date as YYYY-MM-DD
+            date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            user: "$user",
+            category: "$category"
+          },
+          totalWaste: { $sum: "$quantity" }
+        }
+      },
+      { $sort: { totalWaste: -1 } }, // Sort in descending order
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id.user",
+          foreignField: "_id",
+          as: "userData"
+        }
+      },
+      { $unwind: "$userData" }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
 app.get("/carbon", async (req, res) => {
   res.render("carbon");
 });
 
-app.get("/admin", async (req, res) => {
-  res.render("admin");
-});
-
-app.get("*", (req, res) => {  
+app.get("*", (req, res) => {
   res.redirect("/index");
 });
 
 function formatToBulletPoints(text) {
   // Ensure bullet points are formatted properly
   let formattedText = text
-      .replace(/\* \*\*(.*?)\*\*:/g, '\n- **$1:**') // Fix headers
-      .replace(/\* /g, '\n- '); // Ensure new bullet points
-  
+    .replace(/\* \*\*(.*?)\*\*:/g, "\n- **$1:**") // Fix headers
+    .replace(/\* /g, "\n- "); // Ensure new bullet points
+
   return formattedText.trim();
 }
-
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-
-

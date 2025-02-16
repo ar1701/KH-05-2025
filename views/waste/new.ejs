@@ -31,7 +31,23 @@
       <label class="form-label">Waste Name</label>
       <input type="text" name="name" class="form-control" required>
     </div>
-    <div class="mb-3">
+
+    <div class="mb-5">
+      <label class="form-label">Category</label>
+      <select name="category" class="form-select" required>
+        <option value="">Select a category</option>
+        <option value="Plastic">Plastic</option>
+        <option value="Paper">Paper</option>
+        <option value="Metal">Metal</option>
+        <option value="Glass">Glass</option>
+        <option value="Organic">Organic</option>
+        <option value="E-waste">E-waste</option>
+        <option value="Textile">Textile</option>
+        <option value="Expired Food">Expired Food</option>
+        <option value="Others">Others</option>
+      </select>
+
+    <div class="mb-3 mt-3">
       <label class="form-label">Quantity (kg)</label>
       <input type="number" name="quantity" class="form-control" required>
     </div>
@@ -47,10 +63,12 @@
       <label class="form-label">Upload Image</label>
       <input type="file" name="image" class="form-control" required>
     </div>
-    <button type="submit" class="btn btn-success" id="submitBtn">Post Waste</button>
+    <button type="submit" class="btn btn-success " id="submitBtn">Post Waste</button>
     <div class="spinner" id="loadingSpinner"></div>
   </form>
 </div>
+
+<%- include("../partials/footer") %>
 
 <script>
   document.getElementById("wasteForm").addEventListener("submit", function(event) {
@@ -72,4 +90,4 @@
   });
 </script>
 
-<%- include("../partials/footer") %>
+

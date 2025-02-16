@@ -1,164 +1,389 @@
-<%- include("partials/header") %>
-<style>
-   .navbar{
-    color: black;
-   }
-</style>
-<body>
-
-    <!-- Admin Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/admin">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5191HlHnmsE0pWkDdpzu1ETn3i3K-XkimXA&s" alt="Logo" class="logo">
-                <span>Eco Waste Admin</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNavbar">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin/users"><i class="fas fa-users me-1"></i> Users</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin/waste-data"><i class="fas fa-chart-bar me-1"></i> Waste Data</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin/reports"><i class="fas fa-file-alt me-1"></i> Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin/settings"><i class="fas fa-cog me-1"></i> Settings</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Admin Dashboard -->
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <div class="sidebar bg-light p-3">
-                    <h5 class="mb-4">Quick Links</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item mb-2"><a href="/admin/users" class="nav-link"><i class="fas fa-users me-2"></i> Manage Users</a></li>
-                        <li class="nav-item mb-2"><a href="/admin/waste-data" class="nav-link"><i class="fas fa-trash me-2"></i> Waste Data</a></li>
-                        <li class="nav-item mb-2"><a href="/admin/reports" class="nav-link"><i class="fas fa-file-alt me-2"></i> Generate Reports</a></li>
-                        <li class="nav-item mb-2"><a href="/admin/settings" class="nav-link"><i class="fas fa-cog me-2"></i> System Settings</a></li>
-                        <li class="nav-item mb-2"><a href="/admin/notifications" class="nav-link"><i class="fas fa-bell me-2"></i> Notifications</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <h2 class="mb-4">Admin Dashboard</h2>
-
-                <!-- Statistics Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-users me-2"></i> Total Users</h5>
-                                <p class="card-text display-4">1,234</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-success text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-trash me-2"></i> Waste Collected</h5>
-                                <p class="card-text display-4">5,678 KG</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-chart-line me-2"></i> Active Challenges</h5>
-                                <p class="card-text display-4">12</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity Table -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-history me-2"></i> Recent Activity</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>User</th>
-                                    <th>Activity</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>Recycled 5 KG of waste</td>
-                                    <td>2023-10-01</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Joined the 7-Day Plastic-Free Challenge</td>
-                                    <td>2023-10-02</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Alice Johnson</td>
-                                    <td>Planted a tree</td>
-                                    <td>2023-10-03</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Waste Data Chart -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-chart-bar me-2"></i> Waste Data Overview</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="wasteChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Eco Waste Management</title>
+  <!-- Bootstrap CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body class="admin-body">
+  <!-- Admin Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5191HlHnmsE0pWkDdpzu1ETn3i3K-XkimXA&s"
+          alt="Logo"
+          class="logo"
+        />
+        <span>Eco Waste Admin</span>
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#adminNavbar"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="adminNavbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/dashboard"
+              ><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/users"
+              ><i class="fas fa-users me-1"></i> Users</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/waste-data"
+              ><i class="fas fa-chart-bar me-1"></i> Waste Data</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/reports"
+              ><i class="fas fa-file-alt me-1"></i> Reports</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/settings"
+              ><i class="fas fa-cog me-1"></i> Settings</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout"
+              ><i class="fas fa-sign-out-alt me-1"></i> Logout</a
+            >
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <%- include("partials/footer") %>  
+  <!-- Main Container -->
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3">
+        <div class="sidebar bg-glass p-4">
+          <h5 class="mb-4 text-white">Quick Links</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-3">
+              <a href="/admin/users" class="nav-link text-white"
+                ><i class="fas fa-users me-2"></i> Manage Users</a
+              >
+            </li>
+            <li class="nav-item mb-3">
+              <a href="/admin/waste-data" class="nav-link text-white"
+                ><i class="fas fa-trash me-2"></i> Waste Data</a
+              >
+            </li>
+            <li class="nav-item mb-3">
+              <a href="/admin/reports" class="nav-link text-white"
+                ><i class="fas fa-file-alt me-2"></i> Generate Reports</a
+              >
+            </li>
+            <li class="nav-item mb-3">
+              <a href="/admin/settings" class="nav-link text-white"
+                ><i class="fas fa-cog me-2"></i> System Settings</a
+              >
+            </li>
+            <li class="nav-item mb-3">
+              <a href="/admin/notifications" class="nav-link text-white"
+                ><i class="fas fa-bell me-2"></i> Notifications</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js for Waste Data Chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Waste Data Chart
-        const ctx = document.getElementById('wasteChart').getContext('2d');
-        const wasteChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Waste Collected (KG)',
-                    data: [1200, 1500, 1800, 2000, 1700, 2200],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+      <!-- Main Content -->
+      <div class="col-md-9">
+        <!-- Top Cards -->
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="card bg-glass text-white">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-users me-2"></i> Total Users
+                </h5>
+                <p class="card-text display-4" id="totalUsers">0</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="card bg-glass text-white">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-trash me-2"></i> Total Waste Collected
+                </h5>
+                <p class="card-text display-4" id="totalWaste">0 KG</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+          <div class="col-md-4 chart-container">
+            <div class="card bg-glass text-white">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-city me-2"></i> Waste by City
+                </h5>
+              </div>
+              <div class="card-body">
+                <canvas id="cityChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 chart-container">
+            <div class="card bg-glass text-white">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-map-marked-alt me-2"></i> Waste by Sector
+                </h5>
+              </div>
+              <div class="card-body">
+                <canvas id="sectorChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 chart-container">
+            <div class="card bg-glass text-white">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-list-alt me-2"></i> Waste by Category
+                </h5>
+              </div>
+              <div class="card-body">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Contributors -->
+        <div class="card bg-glass mb-4 text-white">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-user me-2"></i> Top Waste Contributors
+            </h5>
+          </div>
+          <div class="card-body">
+            <ul id="topContributors" class="list-group list-group-flush"></ul>
+          </div>
+        </div>
+
+        <!-- Filterable Table: Waste Overview -->
+        <!-- Filterable Table: Waste Overview -->
+<div class="card bg-glass mb-4 text-white">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="fas fa-table me-2"></i> Waste Overview (Descending)
+      </h5>
+    </div>
+    <div class="card-body">
+      <!-- Dropdown Filters -->
+      <div class="row g-2 mb-3">
+        <div class="col-md-3">
+          <select id="filterDate" class="form-select" onchange="filterTable()">
+            <option value="">All Dates</option>
+            <!-- Options added dynamically -->
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select id="filterName" class="form-select" onchange="filterTable()">
+            <option value="">All People</option>
+            <!-- Options added dynamically -->
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select id="filterCity" class="form-select" onchange="filterTable()">
+            <option value="">All Cities</option>
+            <!-- Options added dynamically -->
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select id="filterCategory" class="form-select" onchange="filterTable()">
+            <option value="">All Categories</option>
+            <!-- Options added dynamically -->
+          </select>
+        </div>
+      </div>
+  
+      <div class="table-responsive">
+        <table class="table table-dark table-hover" id="wasteTable">
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Date</th>
+              <th>Person</th>
+              <th>Category</th>
+              <th>Waste (KG)</th>
+            </tr>
+          </thead>
+          <tbody id="wasteTableBody">
+            <!-- Rows will be injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+
+  <%- include("partials/footer") %>
+  <!-- Bootstrap JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <!-- Chart.js for Waste Data Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        // 1) Fetch analytics for the top cards & charts (same as before)
+        const res = await fetch("/admin/analytics");
+        const data = await res.json();
+        document.getElementById("totalUsers").innerText = data.totalUsers;
+        document.getElementById("totalWaste").innerText = data.totalWaste + " KG";
+  
+        // Create your charts with sharper devicePixelRatio
+        createChart("cityChart", "bar", data.cityWiseWaste.map(i => i._id), data.cityWiseWaste.map(i => i.totalWaste), "Waste by City");
+        createChart("sectorChart", "bar", data.sectorWiseWaste.map(i => i._id), data.sectorWiseWaste.map(i => i.totalWaste), "Waste by Sector");
+        createChart("categoryChart", "pie", data.categoryWiseWaste.map(i => i._id), data.categoryWiseWaste.map(i => i.totalWaste), "Waste by Category");
+  
+        // 2) Top Contributors
+        const contributorsList = document.getElementById("topContributors");
+        data.topContributors.forEach((item, index) => {
+          const li = document.createElement("li");
+          li.classList.add("list-group-item");
+          li.innerHTML = `<strong>${index + 1}. ${item.userData.name}</strong> - ${item.totalWaste} KG`;
+          contributorsList.appendChild(li);
         });
-    </script>
+  
+        // 3) Fetch waste overview data for the table
+        const overviewRes = await fetch("/admin/waste-overview");
+        const overviewData = await overviewRes.json();
+  
+        // We'll collect unique sets to populate dropdowns
+        const dateSet = new Set();
+        const nameSet = new Set();
+        const citySet = new Set();
+        const categorySet = new Set();
+  
+        const tableBody = document.getElementById("wasteTableBody");
+        overviewData.forEach((row) => {
+          const tr = document.createElement("tr");
+  
+          const city = row._id.city || "N/A";
+          const date = row._id.date || "N/A";
+          const category = row._id.category || "N/A";
+          const personName = row.userData ? row.userData.name : "Unknown";
+  
+          // Add to sets for building dropdown
+          dateSet.add(date);
+          nameSet.add(personName);
+          citySet.add(city);
+          categorySet.add(category);
+  
+          // Store data in 'data-*' attributes for easy filtering
+          tr.dataset.date = date;
+          tr.dataset.name = personName;
+          tr.dataset.city = city;
+          tr.dataset.category = category;
+  
+          tr.innerHTML = `
+            <td>${city}</td>
+            <td>${date}</td>
+            <td>${personName}</td>
+            <td>${category}</td>
+            <td>${row.totalWaste}</td>
+          `;
+          tableBody.appendChild(tr);
+        });
+  
+        // Populate dropdowns
+        populateDropdown("filterDate", [...dateSet]);
+        populateDropdown("filterName", [...nameSet]);
+        populateDropdown("filterCity", [...citySet]);
+        populateDropdown("filterCategory", [...categorySet]);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      }
+    });
+  
+    // Chart creation with sharper rendering
+    function createChart(id, type, labels, data, label) {
+      const ctx = document.getElementById(id).getContext("2d");
+      new Chart(ctx, {
+        type: type,
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: label,
+              data: data,
+              backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          devicePixelRatio: 2, // sharper charts
+        },
+      });
+    }
+  
+    // Populate a dropdown with unique values
+    function populateDropdown(dropdownId, values) {
+      const dropdown = document.getElementById(dropdownId);
+      // Sort values if needed
+      values.sort().forEach((val) => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        dropdown.appendChild(opt);
+      });
+    }
+  
+    // Filter table by matching data attributes
+    function filterTable() {
+      const selectedDate = document.getElementById("filterDate").value;
+      const selectedName = document.getElementById("filterName").value;
+      const selectedCity = document.getElementById("filterCity").value;
+      const selectedCategory = document.getElementById("filterCategory").value;
+  
+      const rows = document.querySelectorAll("#wasteTableBody tr");
+      rows.forEach((row) => {
+        const rowDate = row.dataset.date;
+        const rowName = row.dataset.name;
+        const rowCity = row.dataset.city;
+        const rowCategory = row.dataset.category;
+  
+        let showRow = true;
+        if (selectedDate && rowDate !== selectedDate) showRow = false;
+        if (selectedName && rowName !== selectedName) showRow = false;
+        if (selectedCity && rowCity !== selectedCity) showRow = false;
+        if (selectedCategory && rowCategory !== selectedCategory) showRow = false;
+  
+        row.style.display = showRow ? "" : "none";
+      });
+    }
+  </script>
+  
 </body>
 </html>
