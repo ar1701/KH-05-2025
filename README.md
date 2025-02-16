@@ -1,1 +1,3 @@
-# Waste Management System
+"Turning Waste into Wonders, Building a Sustainable Future."
+
+
