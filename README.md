@@ -2,7 +2,7 @@
 
 ![Logo](WasteBuddy_Logo.jpeg)  
 
-## **Demo:** [Link to Demo]  
+## **Demo:** https://kh-05-2025.onrender.com/
 
 ## **Overview**  
 ---
