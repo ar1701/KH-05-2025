@@ -40,7 +40,9 @@ We realized that **waste producers (households & businesses)** could be **incent
 
 🔹 **AI & ML:** Gemini API, Groclake, Plotch.ai 
 
-🔹 **Cloud & Deployment:** Render & Cloudinery
+🔹 **Cloud & Deployment:** Render & Cloudinary
+
+🔹 **Libraries:** multer, socket.io
 
 ## **💰 Revenue Model** 
 ---
