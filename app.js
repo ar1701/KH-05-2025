@@ -1,8 +1,10 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-
+const http = require('http');
 const express = require("express");
+const Message = require('./model/Message');
+const socketIO = require('socket.io');
 const mongoose = require("mongoose");
 const path = require("path");
 const axios = require("axios");
@@ -10,6 +12,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const multer = require("multer");
 const session = require("express-session");
+
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const MongoStore = require("connect-mongo");
@@ -67,6 +70,10 @@ const sessionOptions = {
     httpOnly: true,
   },
 };
+
+const server = http.createServer(app);
+const io = socketIO(server);
+const userSockets = new Map();
 
 // Middleware setup
 app.use(cors());
@@ -133,6 +140,10 @@ function asyncHandler(fn) {
   };
 }
 
+
+app.get('/socket.io/socket.io.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules/socket.io/client-dist/socket.io.js'));
+});
 // Utility for file to generative part
 function fileToGenerativePart(path, mimeType) {
   return {
@@ -143,8 +154,76 @@ function fileToGenerativePart(path, mimeType) {
   };
 }
 
+io.on('connection', (socket) => {
+  socket.on('register', (data) => {
+    userSockets.set(data.userId, socket.id);
+  });
+  
+  socket.on('private message', async (data) => {
+    const receiverSocket = userSockets.get(data.receiver);
+    if (receiverSocket) {
+      io.to(receiverSocket).emit('private message', {
+        content: data.content,
+        sender: socket.userId
+      });
+    }
+  });
+  
+  socket.on('disconnect', () => {
+    for (const [userId, socketId] of userSockets.entries()) {
+      if (socketId === socket.id) {
+        userSockets.delete(userId);
+        break;
+      }
+    }
+  });
+});
+
+// Add these routes to your Express app
+app.get('/messages/:userId', async (req, res) => {
+  try {
+    const messages = await Message.find({
+      $or: [
+        { sender: req.user._id, receiver: req.params.userId },
+        { sender: req.params.userId, receiver: req.user._id }
+      ]
+    }).sort('createdAt');
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching messages' });
+  }
+});
+
+app.post('/messages', async (req, res) => {
+  try {
+    const message = new Message({
+      sender: req.user._id,
+      receiver: req.body.receiver,
+      content: req.body.content
+    });
+    await message.save();
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Error saving message' });
+  }
+});
+
 app.get("/login", (req, res) => {
   res.render("login");
+});
+
+app.get('/messages/:userId/:otherUserId', async (req, res) => {
+  try {
+    const messages = await Message.find({
+      $or: [
+        { sender: req.params.userId, receiver: req.params.otherUserId },
+        { sender: req.params.otherUserId, receiver: req.params.userId }
+      ]
+    }).sort('createdAt');
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching messages' });
+  }
 });
 
 app.post("/login", async (req, res, next) => {
